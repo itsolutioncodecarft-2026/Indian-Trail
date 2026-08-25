@@ -2,21 +2,16 @@ export default function SectionHeading({ eyebrow, title, subtitle, centered = fa
   return (
     <div className={`${centered ? 'text-center' : ''} ${className}`}>
       {eyebrow && (
-        <p className="eyebrow mb-4" style={{ color: light ? '#D4A853' : '#B8892A' }}>
+        <p className="eyebrow mb-4" style={{ color: light ? '#C8A96E' : '#C49A3C' }}>
           {eyebrow}
         </p>
       )}
-      <h2
-        className="section-title mb-0"
-        style={{ color: light ? '#FAF6EC' : '#2C1810' }}
-      >
+      <h2 className="section-title mb-0" style={{ color: light ? '#FEFCF7' : '#1a2332' }}>
         {title}
       </h2>
       {subtitle && (
-        <p
-          className={`mt-5 max-w-2xl leading-relaxed font-sans font-light text-lg ${centered ? 'mx-auto' : ''}`}
-          style={{ color: light ? 'rgba(250,246,236,0.6)' : 'rgba(44,24,16,0.6)' }}
-        >
+        <p className={`mt-5 max-w-2xl font-sans font-light text-lg leading-relaxed ${centered ? 'mx-auto' : ''}`}
+          style={{ color: light ? 'rgba(254,252,247,0.6)' : '#4A5568' }}>
           {subtitle}
         </p>
       )}

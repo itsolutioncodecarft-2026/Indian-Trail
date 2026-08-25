@@ -8,9 +8,8 @@ import { MapPin, Sun, ArrowLeft, Star } from 'lucide-react';
 
 export default function DestinationDetailClient({ destination }) {
   const { t } = useLang();
-
-  const relatedTours = tours.filter((tour) =>
-    tour.route.some((city) =>
+  const relatedTours = tours.filter(tour =>
+    tour.route.some(city =>
       city.toLowerCase().includes(destination.name.toLowerCase()) ||
       destination.name.toLowerCase().includes(city.toLowerCase())
     )
@@ -19,61 +18,65 @@ export default function DestinationDetailClient({ destination }) {
   return (
     <>
       {/* Hero */}
-      <section className="relative h-[70vh] min-h-[480px] flex items-end pb-16 overflow-hidden">
+      <section className="relative h-[68vh] min-h-[460px] flex items-end pb-16 overflow-hidden">
         <div className="absolute inset-0">
           <Image src={destination.featuredImage} alt={destination.name} fill priority className="object-cover" sizes="100vw" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#2C1810]/90 via-[#2C1810]/50 to-[#2C1810]/10" />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(13,27,42,0.94) 0%, rgba(13,27,42,0.42) 55%, transparent 100%)' }} />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, rgba(13,27,42,0.55) 0%, transparent 60%)' }} />
         </div>
         <div className="relative container-luxury w-full">
-          <Link href="/destinations" className="inline-flex items-center gap-2 font-sans text-xs tracking-wider mb-6 transition-colors" style={{ color: 'rgba(250,246,236,0.5)' }}>
-            <ArrowLeft size={14} /> {t('common.all_destinations')}
+          <Link href="/destinations"
+            className="inline-flex items-center gap-2 font-sans text-[11px] tracking-wider uppercase mb-7 transition-colors"
+            style={{ color: 'rgba(254,252,247,0.5)' }}
+            onMouseEnter={e => e.currentTarget.style.color = 'rgba(254,252,247,0.88)'}
+            onMouseLeave={e => e.currentTarget.style.color = 'rgba(254,252,247,0.5)'}>
+            <ArrowLeft size={13} /> All Destinations
           </Link>
           <div className="flex items-center gap-2 mb-3">
-            <MapPin size={13} style={{ color: '#B8892A' }} />
-            <span className="font-sans text-xs tracking-wider" style={{ color: '#B8892A' }}>{destination.region}</span>
+            <MapPin size={12} style={{ color: '#C8A96E' }} />
+            <span className="font-sans text-xs tracking-wider" style={{ color: '#C8A96E' }}>{destination.region}</span>
           </div>
-          <h1 className="display-title leading-none mb-3" style={{ color: '#FAF6EC' }}>{destination.name}</h1>
-          <p className="font-serif text-xl italic font-light" style={{ color: 'rgba(250,246,236,0.6)' }}>{destination.tagline}</p>
+          <h1 className="display-title leading-none mb-3" style={{ color: '#FEFCF7' }}>{destination.name}</h1>
+          <p className="font-serif text-xl italic font-light" style={{ color: 'rgba(254,252,247,0.62)' }}>{destination.tagline}</p>
         </div>
       </section>
 
       {/* Content */}
-      <section className="section-padding" style={{ backgroundColor: '#FEFCF7' }}>
+      <section className="section-padding" style={{ backgroundColor: '#FAFBFD' }}>
         <div className="container-luxury">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-16">
 
             {/* Main */}
-            <div className="lg:col-span-2 space-y-12">
+            <div className="lg:col-span-2 space-y-14">
               <div>
-                <p className="eyebrow mb-4" style={{ color: '#B8892A' }}>About</p>
-                <h2 className="font-serif text-2xl font-light mb-5" style={{ color: '#2C1810' }}>Discover {destination.name}</h2>
+                <p className="eyebrow mb-4">About</p>
+                <h2 className="font-serif text-2xl font-light mb-5" style={{ color: '#1a2332' }}>Discover {destination.name}</h2>
                 <div className="divider-gold mb-7" />
-                <p className="font-sans text-lg font-light leading-relaxed" style={{ color: 'rgba(44,24,16,0.7)' }}>{destination.description}</p>
+                <p className="body-large">{destination.description}</p>
               </div>
 
               <div>
-                <p className="eyebrow mb-4" style={{ color: '#B8892A' }}>{t('common.highlights')}</p>
-                <h2 className="font-serif text-2xl font-light mb-5" style={{ color: '#2C1810' }}>Must-See &amp; Do</h2>
+                <p className="eyebrow mb-4">Highlights</p>
+                <h2 className="font-serif text-2xl font-light mb-5" style={{ color: '#1a2332' }}>Must-See &amp; Do</h2>
                 <div className="divider-gold mb-7" />
-                <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
                   {destination.highlights.map((h, i) => (
-                    <li key={i} className="flex items-start gap-3 p-4 border" style={{ backgroundColor: '#fff', borderColor: 'rgba(232,213,176,0.4)' }}>
-                      <Star size={13} className="mt-0.5 shrink-0" style={{ color: '#B8892A' }} />
-                      <span className="font-sans text-sm leading-relaxed" style={{ color: 'rgba(44,24,16,0.7)' }}>{h}</span>
-                    </li>
+                    <div key={i} className="flex items-start gap-3 p-4"
+                      style={{ backgroundColor: '#ffffff', border: '1px solid #E2E8F0' }}>
+                      <Star size={12} className="mt-0.5 shrink-0" style={{ color: '#C49A3C' }} />
+                      <span className="font-sans text-sm font-light leading-relaxed" style={{ color: '#4A5568' }}>{h}</span>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
 
               {relatedTours.length > 0 && (
                 <div>
-                  <p className="eyebrow mb-4" style={{ color: '#B8892A' }}>Journeys</p>
-                  <h2 className="font-serif text-2xl font-light mb-5" style={{ color: '#2C1810' }}>Tours Including {destination.name}</h2>
+                  <p className="eyebrow mb-4">Journeys</p>
+                  <h2 className="font-serif text-2xl font-light mb-5" style={{ color: '#1a2332' }}>Tours Including {destination.name}</h2>
                   <div className="divider-gold mb-7" />
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    {relatedTours.slice(0, 4).map((tour) => (
-                      <TourCard key={tour.id} tour={tour} />
-                    ))}
+                    {relatedTours.slice(0, 4).map(tour => <TourCard key={tour.id} tour={tour} />)}
                   </div>
                 </div>
               )}
@@ -81,33 +84,33 @@ export default function DestinationDetailClient({ destination }) {
 
             {/* Sidebar */}
             <div className="lg:col-span-1">
-              <div className="sticky top-24 space-y-6">
-                <div className="p-6 border" style={{ backgroundColor: '#fff', borderColor: '#E8D5B0' }}>
-                  <h3 className="font-sans text-xs tracking-[0.2em] uppercase mb-5" style={{ color: 'rgba(44,24,16,0.5)' }}>At a Glance</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 py-3 border-b" style={{ borderColor: 'rgba(232,213,176,0.4)' }}>
-                      <MapPin size={14} style={{ color: '#B8892A' }} className="shrink-0" />
-                      <div>
-                        <p className="font-sans text-xs uppercase tracking-wider" style={{ color: 'rgba(44,24,16,0.4)' }}>Region</p>
-                        <p className="font-sans text-sm" style={{ color: '#2C1810' }}>{destination.region}</p>
-                      </div>
+              <div className="sticky top-24 space-y-5">
+                <div style={{ backgroundColor: '#ffffff', border: '1px solid #E2E8F0' }}>
+                  <div className="px-5 pt-5 pb-2">
+                    <p className="font-sans text-[10px] tracking-[0.22em] uppercase" style={{ color: '#A0AEC0' }}>At a Glance</p>
+                  </div>
+                  <div className="flex items-center gap-3 px-5 py-3.5" style={{ borderTop: '1px solid #E2E8F0' }}>
+                    <MapPin size={13} className="shrink-0" style={{ color: '#C49A3C' }} />
+                    <div>
+                      <p className="font-sans text-[9px] uppercase tracking-wider mb-0.5" style={{ color: '#A0AEC0' }}>Region</p>
+                      <p className="font-sans text-sm" style={{ color: '#1a2332' }}>{destination.region}</p>
                     </div>
-                    <div className="flex items-center gap-3 py-3">
-                      <Sun size={14} style={{ color: '#B8892A' }} className="shrink-0" />
-                      <div>
-                        <p className="font-sans text-xs uppercase tracking-wider" style={{ color: 'rgba(44,24,16,0.4)' }}>Best Time to Visit</p>
-                        <p className="font-sans text-sm" style={{ color: '#2C1810' }}>{destination.bestTime}</p>
-                      </div>
+                  </div>
+                  <div className="flex items-center gap-3 px-5 py-3.5" style={{ borderTop: '1px solid #E2E8F0' }}>
+                    <Sun size={13} className="shrink-0" style={{ color: '#C49A3C' }} />
+                    <div>
+                      <p className="font-sans text-[9px] uppercase tracking-wider mb-0.5" style={{ color: '#A0AEC0' }}>Best Time</p>
+                      <p className="font-sans text-sm" style={{ color: '#1a2332' }}>{destination.bestTime}</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="p-6 border" style={{ backgroundColor: 'rgba(232,213,176,0.2)', borderColor: '#E8D5B0' }}>
-                  <h3 className="font-serif text-lg font-light mb-2" style={{ color: '#2C1810' }}>Visit {destination.name}</h3>
-                  <p className="font-sans text-sm mb-5 leading-relaxed" style={{ color: 'rgba(44,24,16,0.5)' }}>
-                    {destination.name} features in several of Om&apos;s curated journeys. Enquire to include it in your personalised itinerary.
+                <div className="p-6" style={{ backgroundColor: '#EBF4FF', border: '1px solid #BEE3F8' }}>
+                  <h3 className="font-serif text-lg font-light mb-2" style={{ color: '#1a2332' }}>Visit {destination.name}</h3>
+                  <p className="font-sans text-sm font-light mb-5 leading-relaxed" style={{ color: '#4A5568' }}>
+                    Featured in several of Om&rsquo;s curated journeys. Enquire to include it in your itinerary.
                   </p>
-                  <Link href="/contact" className="btn-primary block text-center">{t('common.enquire_now')}</Link>
+                  <Link href="/contact" className="btn-blue block text-center">{t('common.enquire_now')}</Link>
                 </div>
               </div>
             </div>

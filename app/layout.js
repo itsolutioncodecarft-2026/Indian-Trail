@@ -52,7 +52,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${cormorant.variable} ${jost.variable}`}>
-      <body className="font-sans antialiased bg-ivory-50 text-charcoal">
+      <body className="font-sans antialiased" style={{ backgroundColor: '#FAFBFD', color: '#1a2332' }}>
         <LanguageProvider>
           <Navbar />
           <main>{children}</main>

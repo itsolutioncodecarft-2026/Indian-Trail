@@ -3,22 +3,22 @@ import { siteConfig } from '@/data/siteContent';
 
 export default function HomeBrand() {
   return (
-    <section style={{ backgroundColor: '#2C1810' }} className="py-5">
-      <div className="container-luxury">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
-          <p className="font-sans text-xs tracking-[0.3em] uppercase text-[#FAF6EC]/30">
+    <div className="border-b" style={{ backgroundColor: '#FAFBFD', borderColor: '#E2E8F0' }}>
+      <div className="container-luxury py-3.5">
+        <div className="flex flex-wrap items-center justify-between gap-y-1.5">
+          <span className="font-sans text-[10px] tracking-[0.3em] uppercase" style={{ color: '#A0AEC0' }}>
             Exclusive Journeys by Om
-          </p>
-          <div className="hidden sm:block h-px w-32 bg-[#B8892A]/20" />
-          <p className="font-serif text-sm italic text-[#FAF6EC]/50">
-            &ldquo;When you journey with Om, you are not a tourist holding a map.&rdquo;
-          </p>
-          <div className="hidden sm:block h-px w-32 bg-[#B8892A]/20" />
-          <p className="font-sans text-xs tracking-[0.3em] uppercase text-[#FAF6EC]/30">
+          </span>
+          <span className="hidden sm:block h-px flex-1 mx-8 bg-[#E2E8F0]" />
+          <span className="font-serif text-xs italic" style={{ color: '#718096' }}>
+            &ldquo;You are not a tourist holding a map — you are an honoured guest.&rdquo;
+          </span>
+          <span className="hidden sm:block h-px flex-1 mx-8 bg-[#E2E8F0]" />
+          <span className="font-sans text-[10px] tracking-[0.3em] uppercase" style={{ color: '#A0AEC0' }}>
             {siteConfig.contact.phones[0]}
-          </p>
+          </span>
         </div>
       </div>
-    </section>
+    </div>
   );
 }

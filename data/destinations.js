@@ -45,7 +45,7 @@ export const destinations = [
     description: `Varanasi or Kashi is the abode of Lord Shiva where thousands of devotees from across the country come to bathe in the sacred waters of the Ganga. Revered as one of the oldest continuously inhabited cities in the world, Varanasi is a tapestry of spirituality, tradition and profound cultural legacy. Its Ghats — stone steps descending into the holy river — are adorned with pilgrims performing ancient rituals at sunrise and sunset, a timeless spectacle embodying the city's spiritual essence. The real essence of Varanasi lies on its Ghats, dotted with the famous ceremonial Aarti, holy bathing, worship of Goddess Ganga or cremation for attaining Moksha (salvation).`,
     highlights: ['Ganga Aarti at Dashashwamedh Ghat (dusk fire ceremony)', 'Sunrise boat ride on the Ganges', 'Kashi Vishwanath Temple (75kg gold, dedicated to Lord Shiva)', 'Benares Hindu University (1,350 acres)', 'Varanasi bazaars — sacred cows, sadhus, saffron-robed devotees', 'Sarnath — Dhamekh Stupa (5th century, Buddha\'s first sermon)'],
     bestTime: 'October – March',
-    featuredImage: 'https://images.unsplash.com/photo-1561361058-c24e3a3b2bf0?w=1200&q=80',
+    featuredImage: 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=1200&q=80',
     isFeatured: true,
   },
   {
@@ -78,7 +78,7 @@ export const destinations = [
     description: `The Golden City of Jaisalmer was founded in the 12th century by Maharaja Jaiswal. Rolling hills of honey-hued sand dunes, vast barren expanses, contrasting colours and mesmerising historical treasures make up the stark beauty of this enchanting city. The city is dotted with splendid palaces and havelis constructed in golden-yellow sandstone — the great connoisseurship of Rajasthan's stonemasonry artwork. Tanot Mata Temple, located on the India–Pakistan border, became renowned for its miracle when bombs fell nearby but did not explode.`,
     highlights: ['Jaisalmer Fort (12th century, India\'s only living inhabited fort, 80m Trikuta Hill)', 'Camel safari in golden sand dunes', 'Salim Singh, Patwon & Nathmalji Havelis (19th century)', 'Bada Bagh — royal cenotaphs', 'Lodurva — ancient Bhatti Rajput capital', 'Tanot Mata Temple (India–Pakistan border)'],
     bestTime: 'October – February',
-    featuredImage: 'https://images.unsplash.com/photo-1477587458883-47145ed31736?w=1200&q=80',
+    featuredImage: 'https://images.unsplash.com/photo-1555400038-63f5ba517a47?w=1200&q=80',
     isFeatured: false,
   },
   {
@@ -122,7 +122,7 @@ export const destinations = [
     description: `Nestled amidst the serene forests of central India, Khajuraho is renowned for its stunning temples adorned with intricate stone carvings. These temples — a UNESCO World Heritage Site — depict life in all its forms: divine, earthly and sensual — showcasing the artistic brilliance of ancient India. 25 magnificent temples built under the generous patronage of the Chandela Dynasty between the 9th and 10th centuries.`,
     highlights: ['Kandariya Mahadev Temple (pinnacle of North Indian temple art)', 'Lakshman & Vishwanath Temple', 'Jain Parsvanath Temple (Eastern Group, 950 AD)', 'Chaturbhuj Temple (Southern Group, 1050 AD)', '25 UNESCO temples — Chandela Dynasty (9th–10th century)', 'Raneh Falls (Ken River, 30m canyon, crystalline granite)'],
     bestTime: 'October – March',
-    featuredImage: 'https://images.unsplash.com/photo-1548013146-72479768bada?w=1200&q=80',
+    featuredImage: 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=1200&q=80',
     isFeatured: false,
   },
   {
@@ -133,7 +133,7 @@ export const destinations = [
     description: `Nestled on the serene banks of the Betwa River in Madhya Pradesh, Orchha is a town steeped in history and adorned with architectural treasures. Its ancient palaces, intricately carved temples and serene cenotaphs reflect the grandeur of its royal past. Known as Raja Ram's Kingdom — the only place in India where Lord Rama is revered as a beloved king, not just a god.`,
     highlights: ['Orchha Fort Complex (Jahangir Mahal — 236 chambers, 136 underground)', 'Raja Mahal & Rai Praveen Mahal (Rajput Bundela architecture)', 'Ram Raja Temple', 'Chaturbhuj Temple (Lord Vishnu)', 'Betwa River & cenotaphs'],
     bestTime: 'October – March',
-    featuredImage: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1200&q=80',
+    featuredImage: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80',
     isFeatured: false,
   },
   {
@@ -166,7 +166,7 @@ export const destinations = [
     description: `Pushkar is a peaceful pilgrim town of lakes and 400 temples. Pushkar derives its name from pushpa (flower) and kar (hands), from the legend that its lakes were created from petals that fell from the divine hands of Lord Brahma, the creator. The soul of Pushkar lies in its vibrant streets, bustling bazaars and Ghats across the sacred pond.`,
     highlights: ['Brahma Temple (one of the very few Brahma temples in India)', 'Pushkar Lake & Ghats', '400 temples throughout the town', 'World-famous Pushkar Camel Fair (annual)', 'Vibrant bazaars — handicrafts, spiritual items'],
     bestTime: 'October – March',
-    featuredImage: 'https://images.unsplash.com/photo-1609766857032-9b01ccb26bef?w=1200&q=80',
+    featuredImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&q=80',
     isFeatured: false,
   },
 ];

@@ -1,75 +1,56 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MapPin, Clock, Sun, ArrowRight } from 'lucide-react';
-import { useLang } from '@/lib/LanguageContext';
+import { MapPin, Clock, ArrowRight } from 'lucide-react';
 
 export default function TourCard({ tour }) {
-  const { t } = useLang();
-
   return (
-    <article className="group flex flex-col h-full bg-white border border-[#E8D5B0]/40 hover:shadow-2xl transition-all duration-500">
+    <article className="group flex flex-col h-full transition-all duration-400"
+      style={{ backgroundColor: '#ffffff', border: '1px solid #E2E8F0' }}
+      onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 8px 28px rgba(26,35,50,0.09)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+      onMouseLeave={e => { e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'none'; }}>
+
       {/* Image */}
-      <div className="relative h-64 overflow-hidden">
-        <Image
-          src={tour.featuredImage}
-          alt={tour.title}
-          fill
+      <div className="relative overflow-hidden" style={{ height: '210px' }}>
+        <Image src={tour.featuredImage} alt={tour.title} fill
           className="object-cover transition-transform duration-700 group-hover:scale-105"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#2C1810]/60 via-transparent to-transparent" />
-        <div className="absolute top-4 right-4 bg-[#2C1810]/80 text-[#FAF6EC] px-3 py-1.5 flex items-center gap-1.5">
-          <Clock size={12} />
-          <span className="font-sans text-xs tracking-wider">
-            {tour.duration} {t('common.days')}
-          </span>
+          sizes="(max-width:768px) 100vw, 33vw" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0d1b2a]/45 via-transparent to-transparent" />
+        <div className="absolute top-4 left-4 flex items-center gap-1.5 px-2.5 py-1 font-sans text-[9px] tracking-[0.2em] uppercase"
+          style={{ backgroundColor: 'rgba(43,108,176,0.88)', color: '#fff', borderRadius: '2px' }}>
+          <Clock size={9} /> {tour.duration} Days
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex flex-col flex-1 p-6">
-        {/* Season */}
-        <div className="flex items-center gap-1.5 mb-3">
-          <Sun size={12} className="text-[#B8892A]" />
-          <span className="font-sans text-xs tracking-wider text-[#B8892A]">{tour.season}</span>
-        </div>
-
-        {/* Title */}
-        <h3 className="font-serif text-xl font-light text-[#2C1810] leading-snug mb-3">
+      <div className="flex flex-col flex-1 p-5">
+        <p className="font-sans text-[9px] tracking-[0.25em] uppercase mb-2" style={{ color: '#C49A3C' }}>
+          {tour.season}
+        </p>
+        <h3 className="font-serif text-lg font-light leading-snug mb-3" style={{ color: '#1a2332' }}>
           {tour.title}
         </h3>
-
-        {/* Route */}
-        <div className="flex items-start gap-2 mb-4">
-          <MapPin size={13} className="text-[#2C1810]/40 mt-0.5 shrink-0" />
-          <p className="font-sans text-xs text-[#2C1810]/50 leading-relaxed">
-            {tour.route.join(' → ')}
+        <div className="flex items-start gap-1.5 mb-4">
+          <MapPin size={11} className="shrink-0 mt-0.5" style={{ color: '#A0AEC0' }} />
+          <p className="font-sans text-[11px] leading-relaxed" style={{ color: '#718096' }}>
+            {tour.route.join(' · ')}
           </p>
         </div>
-
-        {/* Highlights */}
-        <ul className="flex flex-col gap-1.5 mb-6 flex-1">
+        <ul className="space-y-1.5 mb-5 flex-1">
           {tour.highlights.slice(0, 3).map((h, i) => (
             <li key={i} className="flex items-start gap-2">
-              <span className="w-1 h-1 rounded-full bg-[#B8892A] mt-2 shrink-0" />
-              <span className="font-sans text-xs text-[#2C1810]/60 leading-relaxed">{h}</span>
+              <span className="w-1 h-1 rounded-full mt-1.5 shrink-0" style={{ backgroundColor: '#C49A3C' }} />
+              <span className="font-sans text-[11px] leading-relaxed" style={{ color: '#718096' }}>{h}</span>
             </li>
           ))}
         </ul>
-
-        {/* CTA */}
-        <Link
-          href={`/tours/${tour.slug}`}
-          className="group/cta flex items-center justify-between mt-auto pt-4 border-t border-[#E8D5B0]/50"
-        >
-          <span className="font-sans text-xs tracking-[0.15em] uppercase text-[#2C1810]/70 group-hover/cta:text-[#2C1810] transition-colors">
-            {t('common.view_itinerary')}
+        <Link href={`/tours/${tour.slug}`}
+          className="group/cta flex items-center justify-between pt-4 mt-auto"
+          style={{ borderTop: '1px solid #E2E8F0' }}>
+          <span className="font-sans text-[10px] tracking-[0.2em] uppercase transition-colors" style={{ color: '#4A5568' }}>
+            Explore Journey
           </span>
-          <ArrowRight
-            size={16}
-            className="text-[#B8892A] transition-transform duration-300 group-hover/cta:translate-x-1"
-          />
+          <ArrowRight size={14} className="transition-transform duration-300 group-hover/cta:translate-x-1" style={{ color: '#2B6CB0' }} />
         </Link>
       </div>
     </article>

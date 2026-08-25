@@ -1,60 +1,60 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useLang } from '@/lib/LanguageContext';
 import { siteConfig } from '@/data/siteContent';
-import { MessageCircle, Mail, Phone } from 'lucide-react';
+import { MessageCircle, Mail } from 'lucide-react';
 
 export default function HomeCTA() {
-  const { t } = useLang();
   return (
-    <section className="relative py-28 overflow-hidden">
+    <section className="relative min-h-[460px] flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0">
         <Image
-          src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1800&q=80"
-          alt="Begin your India journey"
-          fill className="object-cover" sizes="100vw"
-        />
-        <div className="absolute inset-0" style={{ backgroundColor: 'rgba(44,24,16,0.75)' }} />
+          src="https://images.unsplash.com/photo-1548013146-72479768bada?w=2000&q=85"
+          alt="Taj Mahal — your India journey begins here"
+          fill className="object-cover object-center" sizes="100vw" />
+        <div className="absolute inset-0" style={{ backgroundColor: 'rgba(13,27,42,0.75)' }} />
       </div>
-      <div className="relative container-narrow text-center">
-        <p className="eyebrow mb-5" style={{ color: '#B8892A' }}>Begin Your Journey</p>
-        <h2 className="section-title mb-6" style={{ color: '#FAF6EC' }}>
-          Ready to Discover India<br />
-          <span className="italic font-light" style={{ color: '#D4A853' }}>Through Om&rsquo;s Eyes?</span>
+
+      <div className="relative container-narrow text-center py-20">
+        <p className="eyebrow mb-5" style={{ color: '#C8A96E' }}>Begin Your Journey</p>
+
+        <h2 className="font-serif font-light mb-5" style={{ fontSize: 'clamp(2rem,5vw,3.5rem)', lineHeight: 1.15, color: '#FEFCF7' }}>
+          Your India Journey<br />
+          <em style={{ color: '#C8A96E' }}>Begins Here.</em>
         </h2>
-        <p className="font-sans text-lg font-light mb-10 max-w-xl mx-auto" style={{ color: 'rgba(250,246,236,0.6)' }}>
-          Every journey begins with a conversation. Share your vision with Om, and he will craft an experience that transcends the ordinary.
+
+        <p className="font-sans font-light mb-10 max-w-lg mx-auto" style={{ color: 'rgba(254,252,247,0.6)', fontSize: '1rem' }}>
+          Every conversation with Om begins with listening. Share your vision — he will craft an experience that transcends the ordinary.
         </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-          <Link href="/contact" className="btn-gold">{t('common.plan_journey')}</Link>
+
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
+          <Link href="/contact" className="btn-hero-primary">Plan My Journey</Link>
           <Link
             href="/tours"
-            className="inline-flex items-center gap-2 font-sans text-xs tracking-[0.2em] uppercase px-8 py-3.5 border border-[#FAF6EC]/40 text-[#FAF6EC] hover:bg-[#FAF6EC]/10 transition-all duration-300"
+            className="inline-flex items-center gap-2 font-sans text-xs tracking-[0.2em] uppercase px-8 py-3.5 transition-all duration-300"
+            style={{ border: '1.5px solid rgba(254,252,247,0.35)', color: 'rgba(254,252,247,0.75)', borderRadius: '2px' }}
+            onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'rgba(254,252,247,0.1)'; }}
+            onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
           >
-            {t('common.view_itinerary')}
+            Explore Journeys
           </Link>
         </div>
+
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
           <a href={`https://wa.me/${siteConfig.contact.whatsapp}`} target="_blank" rel="noopener noreferrer"
             className="flex items-center gap-2 font-sans text-xs tracking-wider transition-colors"
-            style={{ color: 'rgba(250,246,236,0.5)' }}
-            onMouseEnter={e => e.currentTarget.style.color = '#D4A853'}
-            onMouseLeave={e => e.currentTarget.style.color = 'rgba(250,246,236,0.5)'}
-          >
-            <MessageCircle size={14} /> WhatsApp
+            style={{ color: 'rgba(254,252,247,0.45)' }}
+            onMouseEnter={e => e.currentTarget.style.color = '#C8A96E'}
+            onMouseLeave={e => e.currentTarget.style.color = 'rgba(254,252,247,0.45)'}>
+            <MessageCircle size={13} /> WhatsApp
           </a>
+          <span style={{ color: 'rgba(254,252,247,0.2)' }}>·</span>
           <a href={`mailto:${siteConfig.contact.emails[0]}`}
-            className="flex items-center gap-2 font-sans text-xs tracking-wider"
-            style={{ color: 'rgba(250,246,236,0.5)' }}
-          >
-            <Mail size={14} /> {siteConfig.contact.emails[0]}
-          </a>
-          <a href={`tel:${siteConfig.contact.phones[0].replace(/[^+\d]/g,'')}`}
-            className="flex items-center gap-2 font-sans text-xs tracking-wider"
-            style={{ color: 'rgba(250,246,236,0.5)' }}
-          >
-            <Phone size={14} /> {siteConfig.contact.phones[0]}
+            className="flex items-center gap-2 font-sans text-xs tracking-wider transition-colors"
+            style={{ color: 'rgba(254,252,247,0.45)' }}
+            onMouseEnter={e => e.currentTarget.style.color = '#C8A96E'}
+            onMouseLeave={e => e.currentTarget.style.color = 'rgba(254,252,247,0.45)'}>
+            <Mail size={13} /> {siteConfig.contact.emails[0]}
           </a>
         </div>
       </div>

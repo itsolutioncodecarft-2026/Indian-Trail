@@ -1,52 +1,55 @@
 'use client';
 import Link from 'next/link';
-import { useLang } from '@/lib/LanguageContext';
 import { siteConfig } from '@/data/siteContent';
-import { Mail, Phone, MapPin, MessageCircle } from 'lucide-react';
+import Logo from './Logo';
+import { Mail, Phone, MapPin, MessageCircle, ArrowRight } from 'lucide-react';
 
 export default function Footer() {
-  const { t } = useLang();
-
   const navLinks = [
-    { href: '/', label: t('nav.home') },
-    { href: '/about', label: t('nav.about') },
-    { href: '/tours', label: t('nav.tours') },
-    { href: '/destinations', label: t('nav.destinations') },
-    { href: '/experiences', label: t('nav.experiences') },
-    { href: '/contact', label: t('nav.contact') },
+    { href: '/',             label: 'Home' },
+    { href: '/about',        label: 'About Om' },
+    { href: '/tours',        label: 'Journeys' },
+    { href: '/destinations', label: 'Destinations' },
+    { href: '/experiences',  label: 'Experiences' },
+    { href: '/contact',      label: 'Contact' },
   ];
 
   return (
-    <footer style={{ backgroundColor: '#2C1810' }} className="text-[#FAF6EC]/70">
+    <footer style={{ backgroundColor: '#0d1b2a' }}>
       <div className="container-luxury py-16 md:py-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8">
 
           {/* Brand */}
-          <div className="lg:col-span-2">
-            <Link href="/" className="block mb-4">
-              <span className="font-serif text-2xl font-light text-[#FAF6EC]">
-                Indian Routes &amp; Trails
-              </span>
+          <div className="lg:col-span-5">
+            <Link href="/" className="block mb-6" aria-label="Indian Routes & Trails">
+              <Logo variant="light" size="md" />
             </Link>
-            <p className="eyebrow text-[#B8892A] mb-6">{t('footer.tagline')}</p>
-            <p className="font-sans text-sm font-light text-[#FAF6EC]/50 max-w-sm leading-relaxed">
-              Curated luxury journeys across India — where heritage meets authenticity.
-              Every itinerary is a hand-woven masterpiece by Om.
+            <p className="font-sans text-sm font-light leading-relaxed max-w-xs" style={{ color: 'rgba(254,252,247,0.42)' }}>
+              Curated luxury journeys across India — where heritage meets authenticity and every itinerary is a hand-woven masterpiece.
             </p>
+            <Link href="/contact"
+              className="group inline-flex items-center gap-2 mt-7 font-sans text-xs tracking-[0.2em] uppercase"
+              style={{ color: '#C49A3C' }}
+              onMouseEnter={e => e.currentTarget.style.color = '#D4AF60'}
+              onMouseLeave={e => e.currentTarget.style.color = '#C49A3C'}>
+              Plan My Journey
+              <ArrowRight size={12} className="transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
           </div>
 
           {/* Navigation */}
-          <div>
-            <h4 className="font-sans text-xs tracking-[0.2em] uppercase text-[#B8892A] mb-6">
+          <div className="lg:col-span-3">
+            <h4 className="font-sans text-[10px] tracking-[0.25em] uppercase mb-6" style={{ color: '#4299E1' }}>
               Navigate
             </h4>
             <ul className="space-y-3">
               {navLinks.map((link) => (
                 <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="font-sans text-sm text-[#FAF6EC]/50 hover:text-[#FAF6EC] transition-colors duration-300"
-                  >
+                  <Link href={link.href}
+                    className="font-sans text-sm transition-colors duration-300"
+                    style={{ color: 'rgba(254,252,247,0.42)' }}
+                    onMouseEnter={e => e.currentTarget.style.color = 'rgba(254,252,247,0.85)'}
+                    onMouseLeave={e => e.currentTarget.style.color = 'rgba(254,252,247,0.42)'}>
                     {link.label}
                   </Link>
                 </li>
@@ -55,48 +58,49 @@ export default function Footer() {
           </div>
 
           {/* Contact */}
-          <div>
-            <h4 className="font-sans text-xs tracking-[0.2em] uppercase text-[#B8892A] mb-6">
-              Contact
+          <div className="lg:col-span-4">
+            <h4 className="font-sans text-[10px] tracking-[0.25em] uppercase mb-6" style={{ color: '#4299E1' }}>
+              Get in Touch
             </h4>
             <ul className="space-y-4">
               {siteConfig.contact.emails.map((email) => (
-                <li key={email} className="flex items-start gap-3">
-                  <Mail size={14} className="text-[#B8892A] mt-0.5 shrink-0" />
-                  <a
-                    href={`mailto:${email}`}
-                    className="font-sans text-sm text-[#FAF6EC]/50 hover:text-[#FAF6EC] transition-colors break-all"
-                  >
-                    {email}
+                <li key={email}>
+                  <a href={`mailto:${email}`}
+                    className="flex items-start gap-3 font-sans text-sm transition-colors"
+                    style={{ color: 'rgba(254,252,247,0.42)' }}
+                    onMouseEnter={e => e.currentTarget.style.color = 'rgba(254,252,247,0.82)'}
+                    onMouseLeave={e => e.currentTarget.style.color = 'rgba(254,252,247,0.42)'}>
+                    <Mail size={13} className="mt-0.5 shrink-0" style={{ color: '#C49A3C' }} />
+                    <span className="break-all">{email}</span>
                   </a>
                 </li>
               ))}
               {siteConfig.contact.phones.map((phone) => (
-                <li key={phone} className="flex items-center gap-3">
-                  <Phone size={14} className="text-[#B8892A] shrink-0" />
-                  <a
-                    href={`tel:${phone.replace(/[^+\d]/g, '')}`}
-                    className="font-sans text-sm text-[#FAF6EC]/50 hover:text-[#FAF6EC] transition-colors"
-                  >
+                <li key={phone}>
+                  <a href={`tel:${phone.replace(/[^+\d]/g, '')}`}
+                    className="flex items-center gap-3 font-sans text-sm transition-colors"
+                    style={{ color: 'rgba(254,252,247,0.42)' }}
+                    onMouseEnter={e => e.currentTarget.style.color = 'rgba(254,252,247,0.82)'}
+                    onMouseLeave={e => e.currentTarget.style.color = 'rgba(254,252,247,0.42)'}>
+                    <Phone size={13} className="shrink-0" style={{ color: '#C49A3C' }} />
                     {phone}
                   </a>
                 </li>
               ))}
               <li className="flex items-start gap-3">
-                <MapPin size={14} className="text-[#B8892A] mt-0.5 shrink-0" />
-                <span className="font-sans text-sm text-[#FAF6EC]/50 leading-relaxed">
+                <MapPin size={13} className="mt-0.5 shrink-0" style={{ color: '#C49A3C' }} />
+                <address className="not-italic font-sans text-sm leading-relaxed" style={{ color: 'rgba(254,252,247,0.32)' }}>
                   {siteConfig.contact.address}
-                </span>
+                </address>
               </li>
               <li>
-                <a
-                  href={`https://wa.me/${siteConfig.contact.whatsapp}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 font-sans text-sm text-[#B8892A] hover:text-[#D4A853] transition-colors"
-                >
-                  <MessageCircle size={14} />
-                  WhatsApp
+                <a href={`https://wa.me/${siteConfig.contact.whatsapp}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 font-sans text-sm transition-colors"
+                  style={{ color: '#C49A3C' }}
+                  onMouseEnter={e => e.currentTarget.style.color = '#D4AF60'}
+                  onMouseLeave={e => e.currentTarget.style.color = '#C49A3C'}>
+                  <MessageCircle size={13} /> WhatsApp
                 </a>
               </li>
             </ul>
@@ -105,16 +109,21 @@ export default function Footer() {
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-[#FAF6EC]/10">
+      <div style={{ borderTop: '1px solid rgba(254,252,247,0.07)' }}>
         <div className="container-luxury py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="font-sans text-xs text-[#FAF6EC]/30">{t('footer.rights')}</p>
+          <p className="font-sans text-xs" style={{ color: 'rgba(254,252,247,0.22)' }}>
+            © 2024 Indian Routes & Trails. All rights reserved.
+          </p>
           <div className="flex items-center gap-6">
-            <Link href="/privacy" className="font-sans text-xs text-[#FAF6EC]/30 hover:text-[#FAF6EC]/60 transition-colors">
-              {t('footer.privacy')}
-            </Link>
-            <Link href="/terms" className="font-sans text-xs text-[#FAF6EC]/30 hover:text-[#FAF6EC]/60 transition-colors">
-              {t('footer.terms')}
-            </Link>
+            {[{ href: '/privacy', label: 'Privacy Policy' }, { href: '/terms', label: 'Terms' }].map(l => (
+              <Link key={l.href} href={l.href}
+                className="font-sans text-xs transition-colors"
+                style={{ color: 'rgba(254,252,247,0.22)' }}
+                onMouseEnter={e => e.currentTarget.style.color = 'rgba(254,252,247,0.55)'}
+                onMouseLeave={e => e.currentTarget.style.color = 'rgba(254,252,247,0.22)'}>
+                {l.label}
+              </Link>
+            ))}
           </div>
         </div>
       </div>
