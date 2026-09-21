@@ -4,7 +4,7 @@ import { responsibleTourism } from '@/data/siteContent';
 
 export default function HomeResponsible() {
   return (
-    <section className="overflow-hidden" style={{ backgroundColor: '#FAFBFD' }}>
+    <section className="overflow-hidden" style={{ backgroundColor: 'var(--color-bg)' }}>
       <div className="grid grid-cols-1 lg:grid-cols-2">
 
         {/* Image */}
@@ -15,31 +15,35 @@ export default function HomeResponsible() {
             fill className="object-cover"
             sizes="(max-width: 1024px) 100vw, 50vw"
           />
-          <div className="absolute inset-0" style={{ backgroundColor: 'rgba(13,27,42,0.15)' }} />
+          <div className="absolute inset-0" style={{ backgroundColor: 'rgba(27,42,94,0.15)' }} />
         </div>
 
         {/* Text */}
         <div
           className="order-1 lg:order-2 flex flex-col justify-center px-8 py-14 md:px-12 lg:px-16"
-          style={{ backgroundColor: '#ffffff' }}
+          style={{ backgroundColor: 'var(--color-surface)' }}
         >
           <div className="flex items-center gap-2 mb-5">
-            <div className="w-5 h-5 flex items-center justify-center rounded-full" style={{ backgroundColor: '#EBF4FF' }}>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2B6CB0" strokeWidth="2">
+            <div className="w-5 h-5 flex items-center justify-center rounded-full"
+              style={{ backgroundColor: 'rgba(27,42,94,0.1)' }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                stroke="var(--color-primary)" strokeWidth="2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
             </div>
-            <p className="eyebrow" style={{ color: '#2B6CB0' }}>Responsible Tourism</p>
+            <p className="eyebrow" style={{ color: 'var(--color-primary)' }}>Responsible Tourism</p>
           </div>
 
-          <h2 className="section-title mb-5" style={{ color: '#1a2332' }}>
+          <h2 className="section-title mb-5">
             Travel with<br />
-            <span className="italic font-light" style={{ color: '#2B6CB0' }}>Conscience</span>
+            <em className="font-light" style={{ color: 'var(--color-primary-light)' }}>Conscience</em>
           </h2>
           <div className="divider-gold mb-8" />
 
-          <blockquote className="pl-5 mb-6" style={{ borderLeft: '3px solid #C49A3C' }}>
-            <p className="font-serif text-base italic leading-relaxed" style={{ color: '#4A5568' }}>
+          <blockquote className="pl-5 mb-6"
+            style={{ borderLeft: '3px solid var(--color-secondary)' }}>
+            <p className="font-serif text-base italic leading-relaxed"
+              style={{ color: 'var(--color-text-muted)' }}>
               &ldquo;{responsibleTourism.statement}&rdquo;
             </p>
           </blockquote>

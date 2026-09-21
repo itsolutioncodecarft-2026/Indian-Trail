@@ -1,21 +1,21 @@
 import './globals.css';
-import { Cormorant_Garamond, Jost } from 'next/font/google';
+import { Cormorant_Garamond, Inter } from 'next/font/google';
 import { LanguageProvider } from '@/lib/LanguageContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
-const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-  style: ['normal', 'italic'],
-  variable: '--font-cormorant',
+// latin-ext includes Spanish diacritics: á é í ó ú ñ ¿ ¡
+const displayFont = Cormorant_Garamond({
+  subsets: ['latin-ext'],
+  weight: ['400', '600'],
+  variable: '--font-display',
   display: 'swap',
 });
 
-const jost = Jost({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
-  variable: '--font-jost',
+const bodyFont = Inter({
+  subsets: ['latin-ext'],
+  weight: ['400', '500'],
+  variable: '--font-body',
   display: 'swap',
 });
 
@@ -30,6 +30,7 @@ export const metadata = {
     'India luxury tours', 'India travel', 'Rajasthan tours', 'Taj Mahal',
     'exclusive India tours', 'viajes India', 'turismo India lujo',
     'Golden Triangle India', 'Om guide India', 'Spanish speaking India guide',
+    'Indian Routes and Trails', 'festival tours India',
   ],
   openGraph: {
     type: 'website',
@@ -51,8 +52,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${cormorant.variable} ${jost.variable}`}>
-      <body className="font-sans antialiased" style={{ backgroundColor: '#FAFBFD', color: '#1a2332' }}>
+    <html lang="en" className={`${displayFont.variable} ${bodyFont.variable}`}>
+      <body style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text)' }}>
         <LanguageProvider>
           <Navbar />
           <main>{children}</main>

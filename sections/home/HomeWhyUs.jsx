@@ -6,7 +6,7 @@ const iconMap = { globe: Globe, star: Star, heart: Heart, shield: Shield, users:
 
 export default function HomeWhyUs() {
   return (
-    <section className="section-padding" style={{ backgroundColor: '#F4F6FA' }}>
+    <section className="section-padding" style={{ backgroundColor: 'var(--color-surface-alt)' }}>
       <div className="container-luxury">
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 mb-16 items-end">
@@ -14,12 +14,14 @@ export default function HomeWhyUs() {
             <p className="eyebrow mb-5">The Art of Slow Travel</p>
             <h2 className="section-title">
               Travel as It Was<br />
-              <span className="italic font-light" style={{ color: '#2B6CB0' }}>Always Meant to Be</span>
+              <em className="font-light" style={{ color: 'var(--color-primary-light)' }}>
+                Always Meant to Be
+              </em>
             </h2>
           </div>
-          <p className="body-large" style={{ color: '#4A5568' }}>
-            Om offers what no generic tour can — exclusive cultural access, the rare gift of being truly understood as a traveller,
-            and journeys that stay with you long after you return home.
+          <p className="body-large">
+            Om offers what no generic tour can — exclusive cultural access, the rare gift of being truly
+            understood as a traveller, and journeys that stay with you long after you return home.
           </p>
         </div>
 
@@ -30,24 +32,45 @@ export default function HomeWhyUs() {
               <div
                 key={i}
                 className="p-7 transition-all duration-300 group"
-                style={{ backgroundColor: '#ffffff', border: '1px solid #E2E8F0' }}
+                style={{
+                  backgroundColor: 'var(--color-surface)',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: 'var(--radius-card)',
+                }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = '#2B6CB0';
-                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(43,108,176,0.08)';
+                  e.currentTarget.style.borderColor = 'var(--color-primary-light)';
+                  e.currentTarget.style.boxShadow = 'var(--shadow-overlay)';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = '#E2E8F0';
+                  e.currentTarget.style.borderColor = 'var(--color-border)';
                   e.currentTarget.style.boxShadow = 'none';
                 }}
               >
                 <div
                   className="w-10 h-10 flex items-center justify-center mb-5 transition-colors"
-                  style={{ backgroundColor: '#EBF4FF', borderRadius: '8px' }}
+                  style={{
+                    backgroundColor: 'var(--color-primary)',
+                    borderRadius: 'var(--radius-control)',
+                    opacity: 0.15,
+                  }}
+                />
+                <div
+                  className="w-10 h-10 flex items-center justify-center mb-5 -mt-10 transition-colors"
+                  style={{
+                    backgroundColor: 'rgba(27,42,94,0.1)',
+                    borderRadius: 'var(--radius-control)',
+                  }}
                 >
-                  <Icon size={18} style={{ color: '#2B6CB0' }} />
+                  <Icon size={18} style={{ color: 'var(--color-primary)' }} />
                 </div>
-                <h3 className="font-serif text-lg font-light mb-2.5" style={{ color: '#1a2332' }}>{item.title}</h3>
-                <p className="font-sans text-sm font-light leading-relaxed" style={{ color: '#718096' }}>{item.description}</p>
+                <h3 className="font-serif text-lg font-light mb-2.5"
+                  style={{ color: 'var(--color-text)' }}>
+                  {item.title}
+                </h3>
+                <p className="font-sans text-sm font-light leading-relaxed"
+                  style={{ color: 'var(--color-text-muted)' }}>
+                  {item.description}
+                </p>
               </div>
             );
           })}
