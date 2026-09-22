@@ -58,9 +58,9 @@
   --color-whatsapp:         #25C168;
 
   /* ── Layout ── */
-  --container-max-width:    1280px;
-  --gutter-mobile:          24px;
-  --gutter-desktop:         48px;
+  --container-max-width:    1440px;
+  --gutter-mobile:          20px;
+  --gutter-desktop:         56px;
 
   /* ── Radius ── */
   --radius-control:         8px;
@@ -74,9 +74,14 @@
 
   /* ── Elevation ── */
   --shadow-overlay:         0 8px 24px rgba(20, 20, 43, 0.12);
+  --shadow-gold:            0 0 0 2px rgba(232, 163, 23, 0.55), 0 8px 28px rgba(20, 20, 43, 0.18);
+  --shadow-card-hover:      0 12px 36px rgba(20, 20, 43, 0.18);
 
-  /* ── Section spacing ── */
-  --section-padding:        clamp(64px, 9vw, 128px);
+  /* ── Header height token — used to offset content under the fixed navbar ── */
+  --header-height-mobile:  56px;   /* scrolled mobile: ~56px */
+  --header-height-desktop: 64px;   /* scrolled desktop: ~64px */
+  --section-padding:        clamp(48px, 6vw, 96px);
+  --section-padding-tight:  clamp(32px, 4vw, 64px);
 }
 
 /* ── Base ── */
@@ -221,8 +226,12 @@
     padding-bottom: var(--section-padding);
   }
   .section-padding-sm {
-    padding-top: clamp(40px, 5vw, 80px);
-    padding-bottom: clamp(40px, 5vw, 80px);
+    padding-top: clamp(32px, 4vw, 64px);
+    padding-bottom: clamp(32px, 4vw, 64px);
+  }
+  .section-padding-tight {
+    padding-top: var(--section-padding-tight);
+    padding-bottom: var(--section-padding-tight);
   }
 
   /* ─ Typography ─ */
@@ -293,7 +302,10 @@
   }
   .btn-primary:hover {
     background-color: var(--color-secondary-hover);
-    transform: translateY(-1px);
+    transform: translateY(-1px) scale(1.03);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .btn-primary:hover { transform: none; }
   }
 
   /* Indigo — secondary CTAs */
@@ -336,7 +348,7 @@
     transform: translateY(-1px);
   }
 
-  /* Outline */
+  /* Outline — on hover fills with marigold gold */
   .btn-outline {
     display: inline-flex;
     align-items: center;
@@ -350,11 +362,40 @@
     text-transform: uppercase;
     background: transparent;
     border-radius: var(--radius-control);
-    transition: background-color var(--motion-fast), color var(--motion-fast);
+    transition: background-color var(--motion-fast), color var(--motion-fast),
+                border-color var(--motion-fast), box-shadow var(--motion-fast);
   }
   .btn-outline:hover {
-    background-color: var(--color-primary);
-    color: var(--color-text-invert);
+    background-color: var(--color-secondary);
+    border-color: var(--color-secondary);
+    color: var(--color-text-on-gold);
+    box-shadow: 0 0 0 2px rgba(232,163,23,0.22);
+  }
+
+  /* Secondary text-link — "Read Om's Story" / "All Destinations" / "View All Journeys" family.
+     Indigo text + soft underline at rest; on hover turns marigold-gold including child icon. */
+  .btn-link-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-body), system-ui, sans-serif;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+    transition: color var(--motion-fast), border-color var(--motion-fast);
+  }
+  .btn-link-secondary:hover,
+  .btn-link-secondary:focus-visible {
+    color: var(--color-secondary-hover);
+    border-color: var(--color-secondary-hover);
+  }
+  .btn-link-secondary:hover svg,
+  .btn-link-secondary:focus-visible svg {
+    color: var(--color-secondary-hover);
   }
 
   /* Hero buttons — on dark image overlays */
@@ -374,7 +415,10 @@
   }
   .btn-hero-primary:hover {
     background-color: var(--color-secondary-hover);
-    transform: translateY(-1px);
+    transform: translateY(-1px) scale(1.03);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .btn-hero-primary:hover { transform: none; }
   }
 
   .btn-hero-ghost {
@@ -424,7 +468,7 @@
   }
 }
 
-/* ── Utilities ── */
+/* ── Animations ── */
 @layer utilities {
   .text-balance { text-wrap: balance; }
   .writing-vertical { writing-mode: vertical-rl; }
@@ -463,3 +507,99 @@
 .animate-fade-in          { animation: fadeIn 0.6s ease forwards; }
 .animate-bounce           { animation: bounce 1.2s ease-in-out infinite; }
 .animate-countdown-pulse  { animation: countdownPulse 2s ease-in-out infinite; }
+
+/* ── Mobile button sizing ────────────────────────────────────────────
+   All button classes get tighter padding + slightly smaller text on
+   mobile (< 768px). Desktop is completely unaffected.
+   min tap-target kept at ~44px for accessibility.
+──────────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .btn-primary {
+    padding:    0.6rem 1.4rem;
+    font-size:  0.65rem;
+    min-height: 44px;
+  }
+
+  .btn-hero-primary {
+    padding:    0.6rem 1.4rem;
+    font-size:  0.65rem;
+    min-height: 44px;
+  }
+
+  .btn-indigo,
+  .btn-blue {
+    padding:    0.6rem 1.4rem;
+    font-size:  0.65rem;
+    min-height: 44px;
+  }
+
+  .btn-outline {
+    padding:    0.6rem 1.4rem;
+    font-size:  0.65rem;
+    min-height: 44px;
+  }
+
+  .btn-hero-ghost {
+    font-size: 0.65rem;
+  }
+
+  .btn-ghost {
+    font-size: 0.65rem;
+  }
+
+  .btn-link-secondary {
+    font-size: 0.65rem;
+  }
+}
+
+/* ── Homepage hero CTAs — mobile only (below sm breakpoint) ─────────
+   Both buttons become equal-width, slightly smaller, and cleanly stacked
+   with consistent left edges. Desktop (≥ 640px) is unchanged.
+──────────────────────────────────────────────────────────────────── */
+@media (max-width: 639px) {
+  /* Make both hero buttons equal full width within their flex column */
+  .btn-hero-primary,
+  .btn-hero-ghost {
+    width:       100%;
+    max-width:   280px;     /* cap so they don't stretch to full phone width */
+    justify-content: center;
+    padding:     0.6rem 1.2rem;
+    font-size:   0.62rem;
+    min-height:  44px;
+  }
+}
+
+/* ── Hide scrollbar for CSS scroll-snap sliders ─────────────────
+   Applied to mobile experience category sliders (.no-scrollbar).
+   Scrolling still works; only the visual scrollbar is hidden.
+──────────────────────────────────────────────────────────────── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+
+/* ── Availability Drawer animations ────────────────────────────── */
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.45; }
+}
+
+/* Mobile: drawer becomes a bottom sheet */
+@media (max-width: 639px) {
+  .availability-drawer {
+    top:    auto !important;
+    right:  0 !important;
+    bottom: 0 !important;
+    left:   0 !important;
+    width:  100% !important;
+    max-height: 92dvh;
+    border-radius: 16px 16px 0 0;
+    animation: slideInUp 300ms cubic-bezier(0.4,0,0.2,1) forwards !important;
+  }
+}
+@keyframes slideInUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}

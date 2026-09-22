@@ -99,7 +99,7 @@ export const translations = {
     // Footer
     footer: {
       tagline: 'A Signature of Excellence',
-      rights: '© 2024 Indian Routes & Trails. All rights reserved.',
+      rights: `© ${new Date().getFullYear()} Indian Routes & Trails. All rights reserved.`,
       privacy: 'Privacy Policy',
       terms: 'Terms & Conditions',
       designed: 'Crafted with love for India.',
@@ -204,7 +204,7 @@ export const translations = {
     // Footer
     footer: {
       tagline: 'Un Sello de Excelencia',
-      rights: '© 2024 Indian Routes & Trails. Todos los derechos reservados.',
+      rights: `© ${new Date().getFullYear()} Indian Routes & Trails. Todos los derechos reservados.`,
       privacy: 'Política de Privacidad',
       terms: 'Términos y Condiciones',
       designed: 'Creado con amor por India.',

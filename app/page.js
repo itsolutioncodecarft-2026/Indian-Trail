@@ -1,5 +1,6 @@
 import HomeHero from '@/sections/home/HomeHero';
 import HomeBrand from '@/sections/home/HomeBrand';
+import HomeFestivalStrip from '@/sections/home/HomeFestivalStrip';
 import HomeTours from '@/sections/home/HomeTours';
 import HomeDestinations from '@/sections/home/HomeDestinations';
 import HomeAboutTeaser from '@/sections/home/HomeAboutTeaser';
@@ -17,6 +18,7 @@ export default function HomePage() {
     <>
       <HomeHero />
       <HomeBrand />
+      <HomeFestivalStrip />
       <HomeTours />
       <HomeAboutTeaser />
       <HomeDestinations />

@@ -27,7 +27,7 @@ export const destinations = [
       'Rashtrapati Bhavan and Parliament House along Kartavya Path',
     ],
     bestTime: 'October – March',
-    featuredImage: 'https://images.unsplash.com/photo-1587474260584-136574528ed5?w=1200&q=80',
+    featuredImage: '/destination/delhi.jpg',
     isFeatured: true,
   },
   {
@@ -46,7 +46,7 @@ export const destinations = [
       'Parchin Kari — the living craft of stone inlay into white marble',
     ],
     bestTime: 'October – March',
-    featuredImage: 'https://images.unsplash.com/photo-1548013146-72479768bada?w=1200&q=80',
+    featuredImage: '/destination/agra.jpg',
     isFeatured: true,
   },
   {
@@ -68,7 +68,7 @@ export const destinations = [
       'Old bazaars — block-print textiles, blue pottery, Kundankari jewellery',
     ],
     bestTime: 'October – March',
-    featuredImage: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1200&q=80',
+    featuredImage: '/destination/jaipur.jpg',
     isFeatured: true,
   },
   {
@@ -86,7 +86,7 @@ export const destinations = [
       'Sarnath — where the Buddha delivered his first sermon (Dhamekh Stupa, 5th century)',
     ],
     bestTime: 'October – March',
-    featuredImage: 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=1200&q=80',
+    featuredImage: '/destination/varanasi.jpg',
     isFeatured: true,
   },
   {
@@ -103,7 +103,7 @@ export const destinations = [
       'Wagah Border retreat ceremony — India–Pakistan',
     ],
     bestTime: 'October – March',
-    featuredImage: 'https://images.unsplash.com/photo-1514222134-b57cbb8ce073?w=1200&q=80',
+    featuredImage: '/destination/amritsar.jpg',
     isFeatured: false,
   },
   {
@@ -119,7 +119,7 @@ export const destinations = [
       'Bharatpur Palace — fine Mughal-Rajput hybrid architecture',
     ],
     bestTime: 'October – March (migratory birds Nov–Feb)',
-    featuredImage: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200&q=80',
+    featuredImage: '/destination/bharatpur.jpg',
     isFeatured: false,
   },
   {
@@ -136,7 +136,7 @@ export const destinations = [
       'Morning and evening safaris for varied light and animal activity',
     ],
     bestTime: 'October – June (peak sightings: Nov–Apr)',
-    featuredImage: 'https://images.unsplash.com/photo-1551582045-6ec9c11d8697?w=1200&q=80',
+    featuredImage: '/destination/ranthambore.jpg',
     isFeatured: false,
   },
   {
@@ -153,7 +153,7 @@ export const destinations = [
       'Rose-water and attar production — the "rose capital of India"',
     ],
     bestTime: 'October – March',
-    featuredImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&q=80',
+    featuredImage: '/destination/pushkar.jpg',
     isFeatured: false,
   },
 
@@ -173,7 +173,7 @@ export const destinations = [
       'Umaid Bhawan Palace — one of the world\'s largest private residences',
     ],
     bestTime: 'October – March',
-    featuredImage: 'https://images.unsplash.com/photo-1599661046289-e31897846e41?w=1200&q=80',
+    featuredImage: '/destination/jodhpur.jpg',
     isFeatured: true,
   },
   {
@@ -192,7 +192,7 @@ export const destinations = [
       'Miniature-painting workshops — still active ateliers in the old city',
     ],
     bestTime: 'October – March',
-    featuredImage: 'https://images.unsplash.com/photo-1567157577867-05ccb1388e66?w=1200&q=80',
+    featuredImage: '/destination/udaipur.jpg',
     isFeatured: true,
   },
   {
@@ -210,7 +210,7 @@ export const destinations = [
       'Bundi old town walking tour — blue lanes, temples, havelis',
     ],
     bestTime: 'October – March',
-    featuredImage: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200&q=80',
+    featuredImage: '/destination/bundi.jpg',
     isFeatured: false,
   },
   {
@@ -225,7 +225,7 @@ export const destinations = [
       'Samode Haveli in Jaipur\'s old city — the family\'s city residence',
     ],
     bestTime: 'October – March',
-    featuredImage: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1200&q=80',
+    featuredImage: '/destination/samode.jpg',
     isFeatured: false,
   },
   {
@@ -241,7 +241,7 @@ export const destinations = [
       'Strategic mid-point between Delhi and Jaipur',
     ],
     bestTime: 'October – March',
-    featuredImage: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200&q=80',
+    featuredImage: '/destination/neemrana.jpg',
     isFeatured: false,
   },
   {
@@ -258,7 +258,7 @@ export const destinations = [
       'Authentic rural Rajasthan — far from the tourist circuit',
     ],
     bestTime: 'September – March',
-    featuredImage: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200&q=80',
+    featuredImage: '/destination/ramdhara.jpg',
     isFeatured: false,
   },
   {
@@ -275,7 +275,7 @@ export const destinations = [
       'Ranakpur Jain Temple — 30 min away, a natural day-excursion',
     ],
     bestTime: 'October – March',
-    featuredImage: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200&q=80',
+    featuredImage: '/destination/rawla%20narlai.jpg',
     isFeatured: false,
   },
   {
@@ -291,7 +291,7 @@ export const destinations = [
       'Gateway to the Kumbhalgarh–Udaipur–Ranakpur triangle',
     ],
     bestTime: 'September – March',
-    featuredImage: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1200&q=80',
+    featuredImage: '/destination/deogarh.jpg',
     isFeatured: false,
   },
   {
@@ -308,7 +308,7 @@ export const destinations = [
       'Panoramic views across the Aravalli Hills into the Thar Desert',
     ],
     bestTime: 'October – March',
-    featuredImage: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1200&q=80',
+    featuredImage: '/destination/kumbhalgarh.jpg',
     isFeatured: false,
   },
   {
@@ -324,7 +324,7 @@ export const destinations = [
       'Forest setting — leopards and sloth bears in the surrounding hills',
     ],
     bestTime: 'October – March',
-    featuredImage: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1200&q=80',
+    featuredImage: '/destination/ranakpura.jpg',
     isFeatured: false,
   },
 
@@ -343,7 +343,7 @@ export const destinations = [
       'Betwa River — boat rides and riverside walks in a largely unchanged landscape',
     ],
     bestTime: 'October – March',
-    featuredImage: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80',
+    featuredImage: '/destination/orchha.jpg',
     isFeatured: false,
   },
   {
@@ -360,7 +360,7 @@ export const destinations = [
       'Evening sound and light show at the Western Group',
     ],
     bestTime: 'October – March',
-    featuredImage: 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=1200&q=80',
+    featuredImage: '/destination/khajuraho.jpg',
     isFeatured: false,
   },
   {
@@ -376,7 +376,7 @@ export const destinations = [
       'Natural stop on the Jaipur–Agra / Jaipur–Bharatpur route',
     ],
     bestTime: 'October – March',
-    featuredImage: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1200&q=80',
+    featuredImage: '/destination/abhaneri.jpg',
     isFeatured: false,
   },
   {
@@ -394,7 +394,7 @@ export const destinations = [
       'UNESCO World Heritage Site — the only planned Mughal capital still intact',
     ],
     bestTime: 'October – March',
-    featuredImage: 'https://images.unsplash.com/photo-1548013146-72479768bada?w=1200&q=80',
+    featuredImage: '/destination/fatehpur%20sikri.jpg',
     isFeatured: false,
   },
 ];

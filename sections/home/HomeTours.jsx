@@ -1,136 +1,149 @@
 'use client';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { tours } from '@/data/tours';
-import { Clock, MapPin, ArrowRight } from 'lucide-react';
+import { useCarousel } from '@/hooks/useCarousel';
+import { Clock, MapPin, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
-export default function HomeTours() {
-  // Show all 7 journeys — first 5 in editorial grid, last 2 as strips
-  const featured = tours.filter((t) => t.isFeatured);
-  const gridTours = featured.slice(0, 5);
-  const stripTours = featured.slice(5);
+/* ── responsive perView ──────────────────────────────────────────── */
+function usePerView() {
+  const [perView, setPerView] = useState(3);
+  useEffect(() => {
+    const upd = () => setPerView(window.innerWidth < 768 ? 1 : 3);
+    upd();
+    window.addEventListener('resize', upd, { passive: true });
+    return () => window.removeEventListener('resize', upd);
+  }, []);
+  return perView;
+}
 
+/* ── shared dots — exported for HomeWhyUs reuse ──────────────────── */
+export function CarouselDots({ total, active, onDotClick, className = '' }) {
   return (
-    <section className="section-padding" style={{ backgroundColor: 'var(--color-surface-tint)' }}>
-      <div className="container-luxury">
-
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
-          <div>
-            <p className="eyebrow mb-4">Signature Journeys</p>
-            <h2 className="section-title">
-              Seven Extraordinary<br />
-              <em className="font-light" style={{ color: 'var(--color-primary-light)' }}>
-                Expeditions
-              </em>
-            </h2>
-          </div>
-          <Link
-            href="/tours"
-            className="group flex items-center gap-2 font-sans text-xs tracking-[0.2em] uppercase shrink-0"
-            style={{ color: 'var(--color-text-muted)' }}>
-            View All Journeys
-            <ArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-1" />
-          </Link>
-        </div>
-
-        {/* Editorial grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Large featured — first */}
-          {gridTours[0] && (
-            <div className="md:row-span-2">
-              <TourCard tour={gridTours[0]} large />
-            </div>
-          )}
-          {/* Medium cards */}
-          {gridTours.slice(1, 3).map((t) => <TourCard key={t.id} tour={t} />)}
-          {/* Strip cards */}
-          {gridTours.slice(3, 5).map((t) => <TourStrip key={t.id} tour={t} />)}
-        </div>
-
-        {/* Remaining journeys (6 & 7) as strips */}
-        {stripTours.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            {stripTours.map((t) => <TourStrip key={t.id} tour={t} />)}
-          </div>
-        )}
-
-        <div className="mt-14 text-center">
-          <p className="font-serif text-lg italic mb-5" style={{ color: 'var(--color-text-muted)' }}>
-            &ldquo;Each journey is personally designed — a hand-woven masterpiece by Om.&rdquo;
-          </p>
-          <Link href="/contact" className="btn-primary inline-flex">
-            Design My Journey
-          </Link>
-        </div>
-      </div>
-    </section>
+    <div
+      className={`flex items-center justify-center gap-2 ${className}`}
+      role="tablist"
+      aria-label="Slide position"
+    >
+      {Array.from({ length: total }).map((_, i) => (
+        <button
+          key={i}
+          role="tab"
+          aria-selected={active === i}
+          aria-label={`Go to slide ${i + 1}`}
+          onClick={() => onDotClick(i)}
+          style={{
+            width:           active === i ? '22px' : '7px',
+            height:          '7px',
+            borderRadius:    '999px',
+            border:          'none',
+            padding:         0,
+            cursor:          'pointer',
+            backgroundColor: active === i
+              ? 'var(--color-secondary)'
+              : 'var(--color-border-strong)',
+            transition: 'width 280ms ease, background-color 280ms ease',
+          }}
+        />
+      ))}
+    </div>
   );
 }
 
-function TourCard({ tour, large = false }) {
+/* ── tour card ───────────────────────────────────────────────────── */
+function TourCard({ tour }) {
+  const [hov, setHov] = useState(false);
+
   return (
     <Link
       href={`/tours/${tour.slug}`}
-      className="group relative block overflow-hidden"
+      aria-label={tour.title}
       style={{
-        minHeight: large ? '500px' : '230px',
-        height: large ? '100%' : undefined,
+        display:         'block',
+        position:        'relative',
+        borderRadius:    'var(--radius-card)',
+        minHeight:       '380px',
         backgroundColor: 'var(--color-primary-dark)',
-        borderRadius: 'var(--radius-card)',
+        /* restrained scale — no box-shadow glow on this button per requirement */
+        transform:       hov ? 'translateY(-2px) scale(1.02)' : 'translateY(0) scale(1)',
+        boxShadow:       hov
+          ? '0 6px 24px rgba(20,20,43,0.2)'
+          : '0 2px 8px rgba(20,20,43,0.07)',
+        transition:      'transform 300ms ease, box-shadow 300ms ease',
       }}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
     >
-      <Image
-        src={tour.featuredImage}
-        alt={`${tour.title} — Indian Routes & Trails`}
-        fill
-        className="object-cover opacity-85 group-hover:opacity-75"
-        style={{ transition: `transform var(--motion-image-hover)` }}
-        onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.04)'}
-        onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-        sizes={large ? '(max-width:768px) 100vw, 50vw' : '(max-width:768px) 100vw, 25vw'}
-      />
-      <div className="absolute inset-0"
-        style={{ background: 'linear-gradient(to top, rgba(20,34,77,0.92) 0%, rgba(20,34,77,0.25) 55%, transparent 100%)' }} />
+      {/* image — inside own overflow:hidden so zoom doesn't clip card corners */}
+      <div style={{ position: 'absolute', inset: 0, borderRadius: 'var(--radius-card)', overflow: 'hidden' }}>
+        <Image
+          src={tour.featuredImage}
+          alt={`${tour.title} — Indian Routes & Trails`}
+          fill
+          className="object-cover"
+          style={{
+            transform:  hov ? 'scale(1.04)' : 'scale(1)',
+            opacity:    hov ? 0.80 : 0.88,
+            transition: 'transform 600ms cubic-bezier(0.4,0,0.2,1), opacity 300ms ease',
+          }}
+          sizes="(max-width:767px) 100vw, 33vw"
+        />
+      </div>
 
-      <div className="absolute bottom-0 left-0 right-0 p-6 md:p-7">
-        <div className="flex items-center gap-3 mb-3">
-          <span className="font-sans text-[9px] tracking-[0.22em] uppercase px-2.5 py-1 flex items-center gap-1.5"
-            style={{ backgroundColor: 'rgba(27,42,94,0.85)', color: '#fff', borderRadius: '4px' }}>
+      {/* gradient overlay */}
+      <div
+        style={{
+          position:      'absolute',
+          inset:         0,
+          borderRadius:  'var(--radius-card)',
+          background:    'linear-gradient(to top, rgba(20,34,77,0.94) 0%, rgba(20,34,77,0.28) 50%, transparent 100%)',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* text content */}
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+          <span style={{
+            fontFamily: 'var(--font-body, system-ui)',
+            fontSize: '9px', letterSpacing: '0.22em', textTransform: 'uppercase',
+            padding: '3px 8px', backgroundColor: 'rgba(27,42,94,0.88)', color: '#fff',
+            borderRadius: '4px', display: 'inline-flex', alignItems: 'center', gap: '4px',
+          }}>
             <Clock size={9} /> {tour.duration} Days
           </span>
-          <span className="font-sans text-[9px] tracking-[0.2em] uppercase"
-            style={{ color: 'var(--color-secondary)' }}>
+          <span style={{
+            fontFamily: 'var(--font-body, system-ui)',
+            fontSize: '9px', letterSpacing: '0.2em', textTransform: 'uppercase',
+            color: 'var(--color-secondary)',
+          }}>
             {tour.season}
           </span>
         </div>
-        <h3
-          className="font-serif font-light transition-colors duration-300 mb-2"
-          style={{
-            color: 'var(--color-text-invert)',
-            fontSize: large ? 'clamp(1.25rem,2.5vw,1.75rem)' : '1.1rem',
-            lineHeight: 1.2,
-          }}
-        >
+
+        <h3 style={{
+          fontFamily: 'var(--font-display, Georgia, serif)',
+          fontSize: '1.1rem', fontWeight: 300,
+          color: 'var(--color-text-invert)', lineHeight: 1.2, margin: '0 0 8px',
+        }}>
           {tour.title}
         </h3>
-        <div className="flex items-start gap-1.5 mb-3">
-          <MapPin size={10} className="shrink-0 mt-0.5"
-            style={{ color: 'rgba(232,163,23,0.65)' }} />
-          <p className="font-sans text-[10px]"
-            style={{ color: 'rgba(255,255,255,0.5)' }}>
+
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '5px', marginBottom: '10px' }}>
+          <MapPin size={10} style={{ color: 'rgba(232,163,23,0.7)', flexShrink: 0, marginTop: '2px' }} />
+          <p style={{ fontFamily: 'var(--font-body, system-ui)', fontSize: '10px', color: 'rgba(255,255,255,0.52)', margin: 0 }}>
             {tour.route.slice(0, 4).join(' · ')}{tour.route.length > 4 ? ' ···' : ''}
           </p>
         </div>
-        {large && (
-          <p className="font-sans text-xs leading-relaxed mb-4 line-clamp-2"
-            style={{ color: 'rgba(255,255,255,0.55)' }}>
-            {tour.teaser || tour.overview.slice(0, 130)}…
-          </p>
-        )}
-        <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-          <span className="font-sans text-[10px] tracking-[0.2em] uppercase"
-            style={{ color: 'var(--color-secondary)' }}>
+
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '6px',
+          opacity: hov ? 1 : 0,
+          transform: hov ? 'translateY(0)' : 'translateY(5px)',
+          transition: 'opacity 250ms ease, transform 250ms ease',
+        }}>
+          <span style={{ fontFamily: 'var(--font-body, system-ui)', fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--color-secondary)' }}>
             Explore
           </span>
           <ArrowRight size={11} style={{ color: 'var(--color-secondary)' }} />
@@ -140,40 +153,162 @@ function TourCard({ tour, large = false }) {
   );
 }
 
-function TourStrip({ tour }) {
+/* ── overlay arrow button — sits on track corners ────────────────── */
+function ArrowBtn({ onClick, disabled, label, side }) {
+  const [hov, setHov] = useState(false);
   return (
-    <Link
-      href={`/tours/${tour.slug}`}
-      className="group relative flex overflow-hidden"
-      style={{ height: '140px', backgroundColor: 'var(--color-primary-dark)', borderRadius: 'var(--radius-card)' }}
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={label}
+      onMouseEnter={() => !disabled && setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      style={{
+        /* vertically centred on the card track */
+        position:       'absolute',
+        top:            '50%',
+        [side]:         '12px',
+        transform:      'translateY(-50%)',
+        zIndex:         20,
+        width:          '40px',
+        height:         '40px',
+        borderRadius:   '50%',
+        border:         `1px solid ${disabled ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.25)'}`,
+        display:        'flex',
+        alignItems:     'center',
+        justifyContent: 'center',
+        cursor:         disabled ? 'default' : 'pointer',
+        /* translucent blurred glass look */
+        backgroundColor: disabled
+          ? 'rgba(20,20,43,0.25)'
+          : hov
+            ? 'rgba(27,42,94,0.82)'
+            : 'rgba(20,20,43,0.52)',
+        backdropFilter:  'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
+        color:          disabled ? 'rgba(255,255,255,0.25)' : '#fff',
+        boxShadow:      disabled ? 'none' : '0 2px 12px rgba(0,0,0,0.25)',
+        opacity:        disabled ? 0.4 : 1,
+        transition:     'background-color 180ms ease, opacity 180ms ease, border-color 180ms ease',
+        pointerEvents:  disabled ? 'none' : 'auto',
+      }}
     >
-      <Image
-        src={tour.featuredImage}
-        alt={`${tour.title} — Indian Routes & Trails`}
-        fill
-        className="object-cover opacity-75 group-hover:opacity-65"
-        style={{ transition: `transform var(--motion-image-hover)` }}
-        onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.04)'}
-        onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
-        sizes="(max-width:768px) 100vw, 50vw"
-      />
-      <div className="absolute inset-0"
-        style={{ background: 'linear-gradient(to right, rgba(20,34,77,0.90) 0%, rgba(20,34,77,0.50) 60%, transparent 100%)' }} />
-      <div className="relative flex items-end p-5 gap-5 w-full">
-        <div className="flex-1 min-w-0">
-          <p className="font-sans text-[9px] tracking-[0.2em] uppercase mb-1"
-            style={{ color: 'var(--color-secondary)' }}>
-            {tour.duration} Days · {tour.season}
-          </p>
-          <h3 className="font-serif text-base font-light transition-colors duration-300 truncate"
-            style={{ color: 'var(--color-text-invert)' }}>
-            {tour.title}
-          </h3>
+      {side === 'left' ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
+    </button>
+  );
+}
+
+/* ── main ────────────────────────────────────────────────────────── */
+export default function HomeTours() {
+  const featured = tours.filter((t) => t.isFeatured);
+  const perView  = usePerView();
+  const isMobile = perView === 1;
+  const GAP      = 16; // px gap between cards
+
+  const { index, maxIndex, prev, next, goTo, canPrev, canNext, touchHandlers } =
+    useCarousel(featured.length, perView);
+
+  const dotCount = maxIndex + 1;
+
+  /*
+   * translateX formula (correct):
+   * card width = (trackWidth - GAP*(perView-1)) / perView
+   * one step   = cardWidth + GAP = trackWidth/perView + GAP/perView
+   * in CSS:    = (100%/perView) + (GAP/perView px)
+   *
+   * translateX = -index * (100%/perView + GAP/perView px)
+   */
+  const pct    = 100 / perView;
+  const gapPx  = GAP / perView;
+  const translateX = `calc(${index} * (-${pct.toFixed(6)}% - ${gapPx.toFixed(6)}px))`;
+
+  return (
+    <section className="section-padding" style={{ backgroundColor: 'var(--color-surface-tint)' }}>
+      <div className="container-luxury">
+
+        {/* heading row — aligns with the full track width */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 mb-8">
+          <div>
+            <p className="eyebrow mb-3">Signature Journeys</p>
+            <h2 className="section-title">
+              Seven Extraordinary<br />
+              <em className="font-light" style={{ color: 'var(--color-primary-light)' }}>
+                Expeditions
+              </em>
+            </h2>
+          </div>
+          {/* "View All Journeys" — marigold gold on hover */}
+          <Link
+            href="/tours"
+            className="btn-link-secondary group flex items-center gap-2 shrink-0"
+          >
+            View All Journeys
+            <ArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-1" />
+          </Link>
         </div>
-        <div className="flex items-center gap-1.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-          <ArrowRight size={14} style={{ color: 'var(--color-secondary)' }} />
+
+        {/*
+          Track wrapper:
+          - NO side padding — track is genuinely full container width.
+          - Arrows are absolutely positioned overlays on the track's top corners.
+          - position:relative so absolute children are scoped here.
+        */}
+        <div style={{ position: 'relative' }}>
+          {/* Overlay arrows — on top of the track, inside its corners */}
+          {!isMobile && (
+            <>
+              <ArrowBtn onClick={prev} disabled={!canPrev} label="Previous journeys" side="left" />
+              <ArrowBtn onClick={next} disabled={!canNext} label="Next journeys"     side="right" />
+            </>
+          )}
+
+          {/* Clip container */}
+          <div
+            style={{ overflow: 'hidden', borderRadius: 'var(--radius-card)' }}
+            {...touchHandlers}
+          >
+            <div
+              style={{
+                display:    'flex',
+                gap:        `${GAP}px`,
+                transform:  `translateX(${translateX})`,
+                transition: 'transform 420ms cubic-bezier(0.4, 0, 0.2, 1)',
+                willChange: 'transform',
+              }}
+            >
+              {featured.map((tour) => (
+                <div
+                  key={tour.id}
+                  style={{
+                    flexShrink: 0,
+                    width: `calc((100% - ${GAP * (perView - 1)}px) / ${perView})`,
+                  }}
+                >
+                  <TourCard tour={tour} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* dots */}
+        <CarouselDots
+          total={dotCount}
+          active={index}
+          onDotClick={goTo}
+          className="mt-6"
+        />
+
+        {/* footer CTA */}
+        <div className="mt-10 text-center">
+          <p className="font-serif text-lg italic mb-5" style={{ color: 'var(--color-text-muted)' }}>
+            &ldquo;Each journey is personally designed — a hand-woven masterpiece by Om.&rdquo;
+          </p>
+          <Link href="/contact" className="btn-primary inline-flex">
+            Design My Journey
+          </Link>
         </div>
       </div>
-    </Link>
+    </section>
   );
 }

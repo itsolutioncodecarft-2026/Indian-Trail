@@ -7,15 +7,31 @@ import { Mail, Phone, MapPin, MessageCircle } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 
+/*
+  Hero offset: fixed navbar is ~64px tall.
+  Adding paddingTop pushes image + content below the nav bar.
+  The hero uses minHeight instead of a fixed viewport fraction so
+  the top padding doesn't reduce visible content height.
+*/
+const HERO_STYLE = {
+  position:   'relative',
+  minHeight:  'clamp(320px, 48vh, 520px)',
+  display:    'flex',
+  alignItems: 'flex-end',
+  overflow:   'hidden',
+  paddingTop: 'var(--header-height-desktop)',
+};
+
 function ContactContent() {
   const { t } = useLang();
   const searchParams = useSearchParams();
   const defaultTour = searchParams.get('tour') || '';
+  const defaultDate = searchParams.get('date') || '';
 
   return (
     <>
       {/* Hero */}
-      <section className="relative h-[48vh] min-h-[320px] flex items-end pb-14 overflow-hidden">
+      <section style={HERO_STYLE}>
         <div className="absolute inset-0">
           <Image
             src="https://images.unsplash.com/photo-1548013146-72479768bada?w=1800&q=85"
@@ -27,7 +43,7 @@ function ContactContent() {
           <div className="absolute inset-0"
             style={{ background: 'linear-gradient(to right, rgba(20,34,77,0.55) 0%, transparent 60%)' }} />
         </div>
-        <div className="relative container-luxury">
+        <div className="relative container-luxury pb-14">
           <p className="eyebrow mb-3" style={{ color: 'var(--color-secondary)' }}>Get in Touch</p>
           <h1 className="font-serif font-light leading-none"
             style={{ fontSize: 'clamp(2.5rem,6vw,4.5rem)', color: 'var(--color-text-invert)' }}>
@@ -66,7 +82,6 @@ function ContactContent() {
               </div>
 
               <div className="space-y-6">
-                {/* Email */}
                 <div>
                   <p className="font-sans text-[9px] tracking-[0.3em] uppercase mb-3"
                     style={{ color: 'var(--color-text-muted)' }}>Email</p>
@@ -82,7 +97,6 @@ function ContactContent() {
                   ))}
                 </div>
 
-                {/* Phone */}
                 <div>
                   <p className="font-sans text-[9px] tracking-[0.3em] uppercase mb-3"
                     style={{ color: 'var(--color-text-muted)' }}>Phone</p>
@@ -98,7 +112,6 @@ function ContactContent() {
                   ))}
                 </div>
 
-                {/* WhatsApp */}
                 <div>
                   <p className="font-sans text-[9px] tracking-[0.3em] uppercase mb-3"
                     style={{ color: 'var(--color-text-muted)' }}>WhatsApp</p>
@@ -108,19 +121,16 @@ function ContactContent() {
                     style={{ color: 'var(--color-primary)' }}
                     onMouseEnter={e => e.currentTarget.style.color = 'var(--color-primary-dark)'}
                     onMouseLeave={e => e.currentTarget.style.color = 'var(--color-primary)'}>
-                    <MessageCircle size={13} className="shrink-0"
-                      style={{ color: 'var(--color-secondary)' }} />
+                    <MessageCircle size={13} className="shrink-0" style={{ color: 'var(--color-secondary)' }} />
                     Chat on WhatsApp
                   </a>
                 </div>
 
-                {/* Address */}
                 <div>
                   <p className="font-sans text-[9px] tracking-[0.3em] uppercase mb-3"
                     style={{ color: 'var(--color-text-muted)' }}>Office</p>
                   <div className="flex items-start gap-3">
-                    <MapPin size={13} className="mt-0.5 shrink-0"
-                      style={{ color: 'var(--color-secondary)' }} />
+                    <MapPin size={13} className="mt-0.5 shrink-0" style={{ color: 'var(--color-secondary)' }} />
                     <address className="not-italic font-sans text-sm font-light leading-relaxed"
                       style={{ color: 'var(--color-text-muted)' }}>
                       {siteConfig.contact.address}
@@ -129,7 +139,6 @@ function ContactContent() {
                 </div>
               </div>
 
-              {/* Quote */}
               <blockquote className="py-5 px-6"
                 style={{
                   backgroundColor: 'rgba(27,42,94,0.06)',
@@ -161,7 +170,7 @@ function ContactContent() {
                 style={{ color: 'var(--color-text-muted)' }}>
                 Tell us about your dream India experience. Om will personally respond.
               </p>
-              <EnquiryForm defaultTour={defaultTour} />
+              <EnquiryForm defaultTour={defaultTour} defaultDate={defaultDate} />
             </div>
           </div>
         </div>

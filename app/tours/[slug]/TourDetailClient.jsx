@@ -4,6 +4,9 @@ import Link from 'next/link';
 import { useLang } from '@/lib/LanguageContext';
 import ItineraryTimeline from '@/components/ItineraryTimeline';
 import EnquiryForm from '@/components/EnquiryForm';
+import StickyEnquiryBar from '@/components/StickyEnquiryBar';
+import RelatedJourneys from '@/components/RelatedJourneys';
+import { tours } from '@/data/tours';
 import { getFestivalsForJourney, getFestivalBySlug, getNextOccurrence, daysUntil } from '@/data/festivals';
 import { Clock, Sun, MapPin, ArrowLeft, ChevronRight, Star, Calendar } from 'lucide-react';
 
@@ -439,6 +442,12 @@ export default function TourDetailClient({ tour }) {
           </div>
         </div>
       </section>
+
+      {/* Related journeys */}
+      <RelatedJourneys currentSlug={tour.slug} tours={tours} />
+
+      {/* Sticky bottom enquiry bar — appears on scroll */}
+      <StickyEnquiryBar tourSlug={tour.slug} tourTitle={tour.title} />
     </>
   );
 }

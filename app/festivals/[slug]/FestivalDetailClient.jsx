@@ -31,7 +31,16 @@ export default function FestivalDetailClient({ festival }) {
   return (
     <>
       {/* Hero */}
-      <section className="relative h-[68vh] min-h-[460px] flex items-end pb-16 overflow-hidden">
+      <section
+        style={{
+          position:   'relative',
+          minHeight:  'clamp(460px, 68vh, 720px)',
+          display:    'flex',
+          alignItems: 'flex-end',
+          overflow:   'hidden',
+          paddingTop: 'var(--header-height-desktop)',
+        }}
+      >
         <div className="absolute inset-0">
           <Image
             src={festival.heroImage}
@@ -44,7 +53,7 @@ export default function FestivalDetailClient({ festival }) {
           <div className="absolute inset-0"
             style={{ background: 'linear-gradient(to right, rgba(20,34,77,0.55) 0%, transparent 60%)' }} />
         </div>
-        <div className="relative container-luxury w-full">
+        <div className="relative container-luxury w-full pb-16">
           <Link
             href="/festivals"
             className="inline-flex items-center gap-2 font-sans text-[11px] tracking-wider uppercase mb-7 transition-colors"

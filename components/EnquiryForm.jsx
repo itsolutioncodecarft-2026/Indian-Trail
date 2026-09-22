@@ -23,11 +23,11 @@ const labelStyle = {
   textTransform: 'uppercase', color: 'var(--color-text-muted)', marginBottom: '6px',
 };
 
-export default function EnquiryForm({ defaultTour = '', defaultMessage = '' }) {
+export default function EnquiryForm({ defaultTour = '', defaultMessage = '', defaultDate = '' }) {
   const { lang } = useLang();
   const [form, setForm] = useState({
     name: '', email: '', phone: '', tour: defaultTour,
-    date: '', travellers: 1, message: defaultMessage, language: lang,
+    date: defaultDate, travellers: 1, message: defaultMessage, language: lang,
   });
   const [errors, setErrors]   = useState({});
   const [focus, setFocus]     = useState({});

@@ -45,8 +45,8 @@ export const festivals = [
       es: 'Diwali —el Festival de las Luces— es la fiesta nacional más celebrada de India, que marca el triunfo de la luz sobre la oscuridad. Durante cinco días en octubre o noviembre, las ciudades se iluminan con lámparas de aceite (diyas), velas y fuegos artificiales. En Jaipur y Udaipur, los palacios se iluminan de forma espectacular; en Varanasi, los ghats se cubren de miles de diyas. Diwali es también el año nuevo para muchas comunidades hindúes.',
     },
     regions: ['Jaipur', 'Udaipur', 'Varanasi', 'Pan-India'],
-    heroImage: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1600&q=80',
-    cardImage: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&q=80',
+    heroImage: '/festivals/diwali.png',
+    cardImage: '/festivals/diwali.png',
     dates: [
       {
         year: 2026,
@@ -76,8 +76,8 @@ export const festivals = [
       es: 'Holi celebra la llegada de la primavera y el triunfo del bien sobre el mal. En la mañana de Holi, la gente llena las calles lanzando polvos de colores y agua. En Jaipur, la familia real celebra Holi desde los balcones del City Palace. En Mathura y Vrindavan (a cuatro horas de Delhi), el festival comienza una semana antes con el Lath Mar Holi, una de las celebraciones más antiguas y espectaculares de India.',
     },
     regions: ['Jaipur', 'Mathura / Vrindavan', 'Pan-India'],
-    heroImage: 'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=1600&q=80',
-    cardImage: 'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=800&q=80',
+    heroImage: '/festivals/holi.png',
+    cardImage: '/festivals/holi.png',
     dates: [
       {
         year: 2026,
@@ -110,8 +110,8 @@ export const festivals = [
       es: 'La Feria del Camello de Pushkar es una de las ferias ganaderas más grandes del mundo y uno de los espectáculos más extraordinarios de India. Cada noviembre, unos 50,000 camellos, caballos y ganado llenan las dunas de Pushkar. La feria alcanza su clímax en Kartik Purnima (luna llena de Kartik), cuando los peregrinos se bañan en el lago sagrado. También hay música folclórica, acrobacias y carreras de camellos.',
     },
     regions: ['Pushkar'],
-    heroImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1600&q=80',
-    cardImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80',
+    heroImage: '/festivals/pushkar_camel_fair.png',
+    cardImage: '/festivals/pushkar_camel_fair.png',
     dates: [
       {
         year: 2026,
@@ -140,8 +140,8 @@ export const festivals = [
       es: 'Dev Deepawali —"Diwali de los Dioses"— tiene lugar 15 días después de Diwali en luna llena de Kartik en Varanasi. Los ghats del Ganges se iluminan con cientos de miles de lámparas de barro, creando un río de luz. Los sacerdotes realizan ceremonias aarti en cada ghat simultáneamente, y los reflejos de las lámparas en el río son inolvidables.',
     },
     regions: ['Varanasi'],
-    heroImage: 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=1600&q=80',
-    cardImage: 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=800&q=80',
+    heroImage: '/festivals/dev_dipawali.png',
+    cardImage: '/festivals/dev_dipawali.png',
     dates: [
       // TODO: Dev Deepawali falls approximately 15 days after Diwali (Kartik Purnima).
       // For 2026: Diwali is 8 Nov 2026; Kartik Purnima is approximately 23–24 Nov 2026.
@@ -171,8 +171,8 @@ export const festivals = [
       es: 'Makar Sankranti marca la transición del sol hacia Capricornio y el inicio de la temporada de cosecha. En Jaipur, Rajasthan celebra con el Festival Internacional de Cometas: las azoteas de toda la ciudad se convierten en plataformas de lanzamiento, y el cielo sobre la Ciudad Rosa se llena de cometas de papel de todos los colores desde el amanecer hasta el anochecer.',
     },
     regions: ['Jaipur', 'Pan-India'],
-    heroImage: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1600&q=80',
-    cardImage: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=800&q=80',
+   heroImage: '/festivals/holi.png',
+    cardImage: '/festivals/holi.png',
     dates: [
       {
         year: 2026,

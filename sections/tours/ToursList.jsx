@@ -1,24 +1,30 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { tours } from '@/data/tours';
-import { Clock, MapPin, Sun, ArrowRight } from 'lucide-react';
+import { festivals, festivalJourneyLinks } from '@/data/festivals';
+import { Clock, MapPin, Sun, ArrowRight, X } from 'lucide-react';
 
 const DURATION_BANDS = [
-  { label: 'All',     fn: () => true },
-  { label: '1–7 days',  fn: (d) => d <= 7 },
-  { label: '8–12 days', fn: (d) => d >= 8 && d <= 12 },
-  { label: '13+ days',  fn: (d) => d >= 13 },
+  { label: 'All',       value: 'all',  fn: () => true },
+  { label: '1–7 days',  value: '1-7',  fn: (d) => d <= 7 },
+  { label: '8–12 days', value: '8-12', fn: (d) => d >= 8 && d <= 12 },
+  { label: '13+ days',  value: '13+',  fn: (d) => d >= 13 },
 ];
 
-const INTEREST_OPTIONS = ['heritage', 'wildlife', 'spiritual', 'rural', 'photography'];
+const INTEREST_OPTIONS = ['heritage', 'wildlife', 'spiritual', 'rural', 'culinary', 'photography'];
 
-function Pill({ label, active, onClick }) {
+// All unique cities from tour routes
+const ALL_DESTINATIONS = [...new Set(tours.flatMap((t) => t.route))].sort();
+
+function Pill({ label, active, onClick, onRemove }) {
   return (
     <button
       onClick={onClick}
-      className="font-sans text-[10px] tracking-[0.15em] uppercase px-3.5 py-1.5 transition-all duration-200"
+      className="inline-flex items-center gap-1.5 font-sans text-[10px] tracking-[0.15em] uppercase px-3.5 py-1.5 transition-all duration-200"
       style={{
         border: `1.5px solid ${active ? 'var(--color-primary)' : 'var(--color-border)'}`,
         backgroundColor: active ? 'var(--color-primary)' : 'transparent',
@@ -27,25 +33,70 @@ function Pill({ label, active, onClick }) {
       }}
     >
       {label}
+      {active && onRemove && (
+        <X size={10} onClick={(e) => { e.stopPropagation(); onRemove(); }} />
+      )}
     </button>
   );
 }
 
-export default function ToursList() {
-  const [duration, setDuration]   = useState(0); // index into DURATION_BANDS
-  const [interests, setInterests] = useState([]);
+// Inner component that reads search params
+function ToursListInner() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const toggleInterest = (i) =>
-    setInterests((prev) =>
-      prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]
-    );
+  // Read initial state from URL
+  const [duration, setDuration]     = useState(searchParams.get('duration') || 'all');
+  const [interests, setInterests]   = useState(
+    searchParams.get('interests') ? searchParams.get('interests').split(',') : []
+  );
+  const [festival, setFestival]     = useState(searchParams.get('festival') || '');
+  const [destination, setDestination] = useState(searchParams.get('destination') || '');
+
+  // Sync state → URL
+  const syncUrl = useCallback((dur, ints, fest, dest) => {
+    const params = new URLSearchParams();
+    if (dur && dur !== 'all') params.set('duration', dur);
+    if (ints.length) params.set('interests', ints.join(','));
+    if (fest) params.set('festival', fest);
+    if (dest) params.set('destination', dest);
+    const q = params.toString();
+    router.replace(q ? `?${q}` : '/tours', { scroll: false });
+  }, [router]);
+
+  const setDur = (v) => { setDuration(v); syncUrl(v, interests, festival, destination); };
+  const toggleInterest = (i) => {
+    const next = interests.includes(i) ? interests.filter((x) => x !== i) : [...interests, i];
+    setInterests(next);
+    syncUrl(duration, next, festival, destination);
+  };
+  const setFest = (v) => { setFestival(v); syncUrl(duration, interests, v, destination); };
+  const setDest = (v) => { setDestination(v); syncUrl(duration, interests, festival, v); };
+
+  const resetAll = () => {
+    setDuration('all'); setInterests([]); setFestival(''); setDestination('');
+    router.replace('/tours', { scroll: false });
+  };
+
+  const hasFilters = duration !== 'all' || interests.length > 0 || festival || destination;
+
+  // Festival slug → journey slugs lookup via festivalJourneyLinks join table
+  const getLinkedSlugs = (festSlug) => {
+    if (!festSlug) return null;
+    return festivalJourneyLinks
+      .filter((l) => l.festivalSlug === festSlug)
+      .map((l) => l.journeySlug);
+  };
+  const linkedSlugs = getLinkedSlugs(festival);
+
+  const durBand = DURATION_BANDS.find((b) => b.value === duration) ?? DURATION_BANDS[0];
 
   const filtered = tours.filter((t) => {
-    const durOk = DURATION_BANDS[duration].fn(t.duration);
-    const intOk =
-      interests.length === 0 ||
-      interests.every((i) => t.interests?.includes(i));
-    return durOk && intOk;
+    if (!durBand.fn(t.duration)) return false;
+    if (interests.length && !interests.every((i) => t.interests?.includes(i))) return false;
+    if (linkedSlugs && !linkedSlugs.includes(t.slug)) return false;
+    if (destination && !t.route.some((c) => c === destination)) return false;
+    return true;
   });
 
   return (
@@ -54,57 +105,111 @@ export default function ToursList() {
 
         {/* Filter rail */}
         <div
-          className="flex flex-wrap gap-5 mb-14 pb-8"
+          className="flex flex-wrap gap-x-8 gap-y-5 mb-14 pb-8"
           style={{ borderBottom: '1px solid var(--color-border)' }}
           role="group"
           aria-label="Filter journeys"
         >
+          {/* Duration */}
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-sans text-[10px] tracking-[0.2em] uppercase mr-1"
-              style={{ color: 'var(--color-text-muted)' }}>
-              Duration
-            </span>
-            {DURATION_BANDS.map((b, i) => (
-              <Pill key={b.label} label={b.label} active={duration === i} onClick={() => setDuration(i)} />
+              style={{ color: 'var(--color-text-muted)' }}>Duration</span>
+            {DURATION_BANDS.map((b) => (
+              <Pill key={b.value} label={b.label} active={duration === b.value}
+                onClick={() => setDur(b.value)} />
             ))}
           </div>
 
+          {/* Interests */}
           <div className="flex flex-wrap items-center gap-2">
             <span className="font-sans text-[10px] tracking-[0.2em] uppercase mr-1"
-              style={{ color: 'var(--color-text-muted)' }}>
-              Interests
-            </span>
+              style={{ color: 'var(--color-text-muted)' }}>Interests</span>
             {INTEREST_OPTIONS.map((interest) => (
-              <Pill
-                key={interest}
-                label={interest}
+              <Pill key={interest} label={interest}
                 active={interests.includes(interest)}
                 onClick={() => toggleInterest(interest)}
-              />
+                onRemove={() => toggleInterest(interest)} />
             ))}
           </div>
+
+          {/* Festival */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-sans text-[10px] tracking-[0.2em] uppercase mr-1"
+              style={{ color: 'var(--color-text-muted)' }}>Festival</span>
+            <select
+              value={festival}
+              onChange={(e) => setFest(e.target.value)}
+              className="font-sans text-[10px] tracking-[0.12em] uppercase px-3 py-1.5 transition-all duration-200"
+              style={{
+                border: `1.5px solid ${festival ? 'var(--color-secondary)' : 'var(--color-border)'}`,
+                backgroundColor: festival ? 'rgba(232,163,23,0.08)' : 'transparent',
+                color: festival ? 'var(--color-text-on-gold)' : 'var(--color-text-muted)',
+                borderRadius: 'var(--radius-control)',
+                outline: 'none',
+                cursor: 'pointer',
+              }}
+              aria-label="Filter by festival"
+            >
+              <option value="">Any Festival</option>
+              {festivals.map((f) => (
+                <option key={f.slug} value={f.slug}>{f.name.en}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Destination */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-sans text-[10px] tracking-[0.2em] uppercase mr-1"
+              style={{ color: 'var(--color-text-muted)' }}>Destination</span>
+            <select
+              value={destination}
+              onChange={(e) => setDest(e.target.value)}
+              className="font-sans text-[10px] tracking-[0.12em] uppercase px-3 py-1.5 transition-all duration-200"
+              style={{
+                border: `1.5px solid ${destination ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                backgroundColor: destination ? 'rgba(27,42,94,0.08)' : 'transparent',
+                color: destination ? 'var(--color-primary)' : 'var(--color-text-muted)',
+                borderRadius: 'var(--radius-control)',
+                outline: 'none',
+                cursor: 'pointer',
+              }}
+              aria-label="Filter by destination"
+            >
+              <option value="">Any Destination</option>
+              {ALL_DESTINATIONS.map((d) => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Reset */}
+          {hasFilters && (
+            <button
+              onClick={resetAll}
+              className="inline-flex items-center gap-1.5 font-sans text-[10px] tracking-[0.15em] uppercase transition-colors"
+              style={{ color: 'var(--color-accent)' }}
+            >
+              <X size={11} /> Clear All
+            </button>
+          )}
         </div>
 
         {/* Results */}
         {filtered.length === 0 ? (
           <div className="text-center py-20">
-            <p className="font-serif text-xl italic" style={{ color: 'var(--color-text-muted)' }}>
+            <p className="font-serif text-xl italic mb-3" style={{ color: 'var(--color-text-muted)' }}>
               No journeys match your selection.
             </p>
-            <p className="font-sans text-sm mt-2 mb-6" style={{ color: 'var(--color-text-muted)' }}>
-              Try broadening your filters, or enquire for a bespoke itinerary.
+            <p className="font-sans text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>
+              Try adjusting your filters, or enquire for a fully bespoke itinerary.
             </p>
             <div className="flex items-center justify-center gap-4">
-              <button
-                onClick={() => { setDuration(0); setInterests([]); }}
+              <button onClick={resetAll}
                 className="font-sans text-xs tracking-[0.2em] uppercase"
-                style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}
-              >
+                style={{ color: 'var(--color-primary)', textDecoration: 'underline' }}>
                 Reset Filters
               </button>
-              <Link href="/contact" className="btn-indigo inline-flex">
-                Enquire for Bespoke
-              </Link>
+              <Link href="/contact" className="btn-indigo inline-flex">Enquire for Bespoke</Link>
             </div>
           </div>
         ) : (
@@ -167,19 +272,16 @@ function TourRow({ tour, index, reverse }) {
         >
           <Clock size={9} /> {tour.duration} Days
         </div>
-        {/* Interest tags */}
         {tour.interests?.length > 0 && (
           <div className="absolute bottom-5 left-5 flex flex-wrap gap-1.5">
             {tour.interests.map((tag) => (
-              <span
-                key={tag}
+              <span key={tag}
                 className="font-sans text-[8px] tracking-[0.15em] uppercase px-2 py-0.5"
                 style={{
                   backgroundColor: 'rgba(27,42,94,0.75)',
                   color: 'rgba(255,255,255,0.75)',
                   borderRadius: 'var(--radius-pill)',
-                }}
-              >
+                }}>
                 {tag}
               </span>
             ))}
@@ -200,10 +302,8 @@ function TourRow({ tour, index, reverse }) {
           </span>
         </div>
 
-        <h2
-          className="font-serif font-light mb-4 leading-snug"
-          style={{ color: 'var(--color-text)', fontSize: 'clamp(1.4rem,2.5vw,2rem)' }}
-        >
+        <h2 className="font-serif font-light mb-4 leading-snug"
+          style={{ color: 'var(--color-text)', fontSize: 'clamp(1.4rem,2.5vw,2rem)' }}>
           {tour.title}
         </h2>
 
@@ -243,5 +343,19 @@ function TourRow({ tour, index, reverse }) {
         </Link>
       </div>
     </div>
+  );
+}
+
+export default function ToursList() {
+  return (
+    <Suspense fallback={
+      <div className="section-padding" style={{ backgroundColor: 'var(--color-bg)' }}>
+        <div className="container-luxury">
+          <div style={{ height: '400px' }} />
+        </div>
+      </div>
+    }>
+      <ToursListInner />
+    </Suspense>
   );
 }

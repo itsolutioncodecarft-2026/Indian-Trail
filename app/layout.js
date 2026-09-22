@@ -3,6 +3,7 @@ import { Cormorant_Garamond, Inter } from 'next/font/google';
 import { LanguageProvider } from '@/lib/LanguageContext';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import FloatingActionGroup from '@/components/FloatingActionGroup';
 
 // latin-ext includes Spanish diacritics: á é í ó ú ñ ¿ ¡
 const displayFont = Cormorant_Garamond({
@@ -58,6 +59,7 @@ export default function RootLayout({ children }) {
           <Navbar />
           <main>{children}</main>
           <Footer />
+          <FloatingActionGroup />
         </LanguageProvider>
       </body>
     </html>

@@ -78,8 +78,7 @@ export default function HomeAboutTeaser() {
 
             <Link
               href="/about"
-              className="group inline-flex items-center gap-3 font-sans text-xs tracking-[0.2em] uppercase self-start"
-              style={{ color: 'var(--color-primary)' }}
+              className="btn-link-secondary group inline-flex items-center gap-3 self-start"
             >
               Read Om&rsquo;s Story
               <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1.5" />

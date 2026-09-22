@@ -3,7 +3,16 @@ import Image from 'next/image';
 
 export default function DestinationsHero() {
   return (
-    <section className="relative h-[62vh] min-h-[400px] flex items-end pb-16 overflow-hidden">
+    <section
+      style={{
+        position:   'relative',
+        minHeight:  'clamp(400px, 62vh, 680px)',
+        display:    'flex',
+        alignItems: 'flex-end',
+        overflow:   'hidden',
+        paddingTop: 'var(--header-height-desktop)',
+      }}
+    >
       <div className="absolute inset-0">
         <Image
           src="https://images.unsplash.com/photo-1599661046289-e31897846e41?w=2000&q=85"
@@ -15,7 +24,7 @@ export default function DestinationsHero() {
         <div className="absolute inset-0"
           style={{ background: 'linear-gradient(to right, rgba(20,34,77,0.55) 0%, transparent 60%)' }} />
       </div>
-      <div className="relative container-luxury">
+      <div className="relative container-luxury pb-16">
         <p className="eyebrow mb-4" style={{ color: 'var(--color-secondary)' }}>Explore India</p>
         <h1 className="display-title leading-none" style={{ color: 'var(--color-text-invert)' }}>
           Cities That<br />

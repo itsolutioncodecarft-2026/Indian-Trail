@@ -9,9 +9,9 @@ export default function Logo({ scrolled = false, variant = 'auto', size = 'md' }
   else if (variant === 'light') useDark = false;
   else                          useDark = scrolled;
 
-  // On dark (transparent nav / footer): white name
-  // On light (scrolled nav): deep text
-  const nameColor = useDark ? '#14142B' : '#FEFCF7';
+  // On dark backgrounds (transparent nav / footer): white text
+  // On light backgrounds (scrolled nav): deep indigo text
+  const nameColor = useDark ? '#14142B' : 'var(--color-text-invert)';
   // Marigold for the diamond and tagline — consistent in both states
   const goldColor = '#E8A317';
 
