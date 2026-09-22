@@ -18,7 +18,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { X, ChevronLeft, ChevronRight, Calendar, AlertCircle } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Calendar, AlertCircle, CalendarDays } from 'lucide-react';
 
 /* ── helpers ─────────────────────────────────────────────────────── */
 const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
@@ -87,6 +87,7 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
   // Data state
   const [busyDates,    setBusyDates]    = useState(null);  // null=loading, []=loaded
   const [loadError,    setLoadError]    = useState(false);
+  const [notConfigured, setNotConfigured] = useState(false);
   const [loadingMonth, setLoadingMonth] = useState('');
 
   // Selection
@@ -135,11 +136,19 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
   const loadMonth = useCallback(async (key) => {
     setLoadingMonth(key);
     setLoadError(false);
+    setNotConfigured(false);
     setBusyDates(null);
     try {
       const res  = await fetch(`/api/calendar/availability?month=${key}`);
+      const data = await res.json().catch(() => ({}));
+
+      // 503 with CALENDAR_NOT_CONFIGURED — graceful unavailable state
+      if (!res.ok && data?.code === 'CALENDAR_NOT_CONFIGURED') {
+        setNotConfigured(true);
+        setBusyDates(null);
+        return;
+      }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
       setBusyDates(data.busyDates ?? []);
     } catch {
       setLoadError(true);
@@ -416,6 +425,22 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
             </div>
           )}
 
+          {/* Not configured — graceful unavailable */}
+          {notConfigured && (
+            <div style={{ textAlign: 'center', padding: '32px 16px' }}>
+              <CalendarDays size={32} style={{ color: 'var(--color-border-strong)', margin: '0 auto 10px' }} />
+              <p style={{
+                fontFamily: 'var(--font-body, system-ui)',
+                fontSize:   '13px',
+                color:      'var(--color-text-muted)',
+                margin:     0,
+                lineHeight: 1.5,
+              }}>
+                Availability is temporarily unavailable.
+              </p>
+            </div>
+          )}
+
           {/* Error / retry */}
           {loadError && (
             <div style={{ textAlign: 'center', padding: '24px 16px' }}>
@@ -426,10 +451,11 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
                 color:      'var(--color-text-muted)',
                 margin:     '0 0 12px',
               }}>
-                Could not load availability. Please try again.
+                Availability is temporarily unavailable.
               </p>
               <button
                 onClick={() => loadMonth(monthKey)}
+                aria-label="Retry loading availability"
                 style={{
                   fontFamily:      'var(--font-body, system-ui)',
                   fontSize:        '11px',

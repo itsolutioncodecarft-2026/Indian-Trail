@@ -1,107 +1,59 @@
 /**
  * GET /api/calendar/availability?month=YYYY-MM
  *
- * Returns the busy dates for the requested calendar month (+ a small buffer)
- * from the admin's Google Calendar.
+ * Returns busy dates from the admin's Google Calendar.
+ * Privacy: only normalized ISO date strings returned.
+ * Authentication: service-account JWT — no OAuth user flow.
  *
- * Privacy: only normalized ISO date strings are returned — NO event titles,
- * descriptions, attendees or locations are ever sent to the browser.
- *
- * Authentication: Google Calendar API via service-account JWT
- * (no OAuth user flow, no client secrets in the browser bundle).
- *
- * Environment variables required (.env.local — never commit real values):
+ * Environment variables (set in Vercel Dashboard → Settings → Env Vars):
  *   GOOGLE_CALENDAR_ID
  *   GOOGLE_SERVICE_ACCOUNT_EMAIL
  *   GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY
+ *   GOOGLE_CALENDAR_TIME_ZONE   (optional, default: Asia/Kolkata)
+ *
+ * Missing config → 503 { error, code: "CALENDAR_NOT_CONFIGURED" }
+ * Never expose secret values, variable names, or stack traces in responses.
  */
 
 import { NextResponse } from 'next/server';
 
-/* ── JWT helpers (no external library needed) ──────────────────── */
+// Force dynamic — this route must never be statically cached or pre-rendered.
+// Prevents Next.js from executing it at build time when env vars are absent.
+export const dynamic = 'force-dynamic';
 
-/**
- * Sign a minimal Google service-account JWT and exchange it for
- * a short-lived OAuth2 access token.
- */
-async function getAccessToken() {
-  const email  = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
-  const rawKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
+/* ─────────────────────────────────────────────────────────────────
+   Server-only config helper — validated lazily inside request handler.
+   Module-level code never throws; no eager initialization.
+───────────────────────────────────────────────────────────────── */
+function getConfig() {
+  const calendarId  = (process.env.GOOGLE_CALENDAR_ID        || '').trim();
+  const email       = (process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL   || '').trim();
+  const rawKey      = (process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY || '').trim();
+  const timeZone    = (process.env.GOOGLE_CALENDAR_TIME_ZONE  || 'Asia/Kolkata').trim();
 
-  if (!email || !rawKey) {
-    throw new Error('Missing GOOGLE_SERVICE_ACCOUNT_EMAIL or GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY');
+  if (!calendarId || !email || !rawKey) {
+    return null; // caller returns 503
   }
 
-  // Handle both literal \n (env file) and actual newlines
-  const pemKey = rawKey.replace(/\\n/g, '\n');
-
-  const now  = Math.floor(Date.now() / 1000);
-  const exp  = now + 3600;
-  const scope = 'https://www.googleapis.com/auth/calendar.readonly';
-
-  // Build JWT header + payload
-  const header  = base64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
-  const payload = base64url(JSON.stringify({
-    iss:   email,
-    scope,
-    aud:   'https://oauth2.googleapis.com/token',
-    iat:   now,
-    exp,
-  }));
-
-  const signingInput = `${header}.${payload}`;
-
-  // Import the RSA private key into Web Crypto
-  const keyData = pemToDer(pemKey);
-  const cryptoKey = await crypto.subtle.importKey(
-    'pkcs8',
-    keyData,
-    { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
-    false,
-    ['sign']
-  );
-
-  const signature = await crypto.subtle.sign(
-    'RSASSA-PKCS1-v1_5',
-    cryptoKey,
-    new TextEncoder().encode(signingInput)
-  );
-
-  const jwt = `${signingInput}.${base64url(signature)}`;
-
-  // Exchange JWT for access token
-  const res = await fetch('https://oauth2.googleapis.com/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-      assertion:  jwt,
-    }),
-  });
-
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Google token exchange failed: ${err}`);
-  }
-
-  const data = await res.json();
-  return data.access_token;
+  return { calendarId, email, rawKey, timeZone };
 }
 
-/** base64url encode — works for string, ArrayBuffer, or Buffer */
+/* ─────────────────────────────────────────────────────────────────
+   JWT helpers — pure Web Crypto, no external dependencies
+───────────────────────────────────────────────────────────────── */
 function base64url(input) {
   let str;
   if (typeof input === 'string') {
-    str = btoa(input);
+    str = btoa(unescape(encodeURIComponent(input)));
   } else {
-    // ArrayBuffer → Uint8Array → binary string
-    const bytes = new Uint8Array(input instanceof ArrayBuffer ? input : input.buffer ?? input);
+    const bytes = new Uint8Array(
+      input instanceof ArrayBuffer ? input : input.buffer ?? input
+    );
     str = btoa(String.fromCharCode(...bytes));
   }
   return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
-/** Strip PEM header/footer and decode base64 to ArrayBuffer */
 function pemToDer(pem) {
   const b64 = pem
     .replace(/-----BEGIN [^-]+-----/g, '')
@@ -113,32 +65,84 @@ function pemToDer(pem) {
   return bytes.buffer;
 }
 
-/* ── Date helpers ───────────────────────────────────────────────── */
+async function getAccessToken(email, rawKey) {
+  // Handle both literal \n and real newlines
+  const pemKey = rawKey.replace(/\\n/g, '\n');
+  const now    = Math.floor(Date.now() / 1000);
 
-/** Convert UTC ISO string to local YYYY-MM-DD using the server's timezone.
-    Since we want the ADMIN's calendar dates we keep things in UTC-aware form.
-    Google Calendar all-day events use date-only strings; timed events use
-    dateTime. We normalize both to a set of covered YYYY-MM-DD strings. */
+  const header  = base64url(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
+  const payload = base64url(JSON.stringify({
+    iss:   email,
+    scope: 'https://www.googleapis.com/auth/calendar.readonly',
+    aud:   'https://oauth2.googleapis.com/token',
+    iat:   now,
+    exp:   now + 3600,
+  }));
+
+  const signingInput = `${header}.${payload}`;
+
+  let cryptoKey;
+  try {
+    cryptoKey = await crypto.subtle.importKey(
+      'pkcs8',
+      pemToDer(pemKey),
+      { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
+  } catch {
+    // Invalid key format — treat as credentials error
+    throw Object.assign(new Error('Invalid private key format'), { code: 'CREDENTIALS_ERROR' });
+  }
+
+  const signature = await crypto.subtle.sign(
+    'RSASSA-PKCS1-v1_5',
+    cryptoKey,
+    new TextEncoder().encode(signingInput)
+  );
+
+  const jwt = `${signingInput}.${base64url(signature)}`;
+
+  const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body:    new URLSearchParams({
+      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+      assertion:  jwt,
+    }),
+  });
+
+  if (!tokenRes.ok) {
+    const status = tokenRes.status;
+    if (status === 401 || status === 403) {
+      throw Object.assign(new Error('Google auth rejected'), { code: 'CREDENTIALS_ERROR' });
+    }
+    throw Object.assign(new Error(`Google token exchange: ${status}`), { code: 'UPSTREAM_ERROR' });
+  }
+
+  const data = await tokenRes.json();
+  return data.access_token;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Date helpers
+───────────────────────────────────────────────────────────────── */
 function isoDateStr(dateOrDateTime, isAllDayEnd = false) {
-  // All-day event end in Google Calendar is EXCLUSIVE (next day)
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateOrDateTime)) {
     if (isAllDayEnd) {
-      // subtract one day
       const d = new Date(dateOrDateTime + 'T00:00:00Z');
       d.setUTCDate(d.getUTCDate() - 1);
       return d.toISOString().slice(0, 10);
     }
     return dateOrDateTime;
   }
-  // Timed event: take the date part in UTC
   return new Date(dateOrDateTime).toISOString().slice(0, 10);
 }
 
-/** Return every YYYY-MM-DD between startDate and endDate (inclusive). */
 function datesBetween(startStr, endStr) {
   const dates = [];
-  const cur = new Date(startStr + 'T00:00:00Z');
-  const end = new Date(endStr   + 'T00:00:00Z');
+  const cur   = new Date(startStr + 'T00:00:00Z');
+  const end   = new Date(endStr   + 'T00:00:00Z');
   while (cur <= end) {
     dates.push(cur.toISOString().slice(0, 10));
     cur.setUTCDate(cur.getUTCDate() + 1);
@@ -146,13 +150,14 @@ function datesBetween(startStr, endStr) {
   return dates;
 }
 
-/* ── Route handler ──────────────────────────────────────────────── */
-
+/* ─────────────────────────────────────────────────────────────────
+   Route handler
+───────────────────────────────────────────────────────────────── */
 export async function GET(request) {
+  // ── 1. Validate input ──────────────────────────────────────────
   const { searchParams } = new URL(request.url);
-  const monthParam = searchParams.get('month'); // expected: YYYY-MM
+  const monthParam = searchParams.get('month');
 
-  // Validate month param
   if (!monthParam || !/^\d{4}-\d{2}$/.test(monthParam)) {
     return NextResponse.json(
       { error: 'month param required, format YYYY-MM' },
@@ -160,77 +165,116 @@ export async function GET(request) {
     );
   }
 
-  const calendarId = process.env.GOOGLE_CALENDAR_ID;
-  if (!calendarId) {
+  // ── 2. Validate server config (lazy — only at request time) ───
+  const config = getConfig();
+  if (!config) {
+    // Log safe code only — never variable names or values
+    console.warn('[calendar/availability] Configuration incomplete');
     return NextResponse.json(
-      { error: 'GOOGLE_CALENDAR_ID not configured' },
-      { status: 500 }
+      {
+        error: 'Calendar availability is not configured',
+        code:  'CALENDAR_NOT_CONFIGURED',
+      },
+      { status: 503 }
     );
   }
 
-  // Build timeMin / timeMax for the requested month
+  // ── 3. Build time range ────────────────────────────────────────
   const [year, month] = monthParam.split('-').map(Number);
   const timeMin = new Date(Date.UTC(year, month - 1, 1)).toISOString();
-  // First day of NEXT month = exclusive end
-  const timeMax = new Date(Date.UTC(year, month, 1)).toISOString();
+  const timeMax = new Date(Date.UTC(year, month,     1)).toISOString();
 
+  // ── 4. Fetch from Google Calendar ─────────────────────────────
   try {
-    const token = await getAccessToken();
+    const token = await getAccessToken(config.email, config.rawKey);
 
-    // Use events.list with singleEvents:true to expand recurring events
-    const url = new URL('https://www.googleapis.com/calendar/v3/calendars/' +
-      encodeURIComponent(calendarId) + '/events');
+    const url = new URL(
+      'https://www.googleapis.com/calendar/v3/calendars/' +
+      encodeURIComponent(config.calendarId) + '/events'
+    );
     url.searchParams.set('timeMin',      timeMin);
     url.searchParams.set('timeMax',      timeMax);
     url.searchParams.set('singleEvents', 'true');
     url.searchParams.set('orderBy',      'startTime');
-    // Only request the fields we actually need — never return titles/descriptions
+    // Only fetch start/end — no titles, descriptions, attendees, locations
     url.searchParams.set('fields',
       'items(start/date,start/dateTime,end/date,end/dateTime)');
 
     const gcalRes = await fetch(url.toString(), {
-      headers: { Authorization: `Bearer ${token}` },
-      // Revalidate every 15 minutes
-      next: { revalidate: 900 },
+      headers:   { Authorization: `Bearer ${token}` },
+      // No caching on sensitive auth responses
+      cache:     'no-store',
     });
 
     if (!gcalRes.ok) {
-      const err = await gcalRes.text();
-      console.error('[calendar/availability] Google Calendar error:', err);
-      return NextResponse.json({ error: 'Google Calendar API error' }, { status: 502 });
+      const status = gcalRes.status;
+      console.warn('[calendar/availability] Google Calendar HTTP', status);
+
+      if (status === 401 || status === 403) {
+        return NextResponse.json(
+          { error: 'Calendar availability is temporarily unavailable', code: 'CREDENTIALS_ERROR' },
+          { status: 503 }
+        );
+      }
+      if (status === 429) {
+        return NextResponse.json(
+          { error: 'Calendar availability is temporarily unavailable', code: 'RATE_LIMITED' },
+          { status: 503 }
+        );
+      }
+      // Google 5xx / network
+      return NextResponse.json(
+        { error: 'Calendar availability is temporarily unavailable', code: 'UPSTREAM_ERROR' },
+        { status: 502 }
+      );
     }
 
     const gcalData = await gcalRes.json();
-    const items = gcalData.items ?? [];
+    const items    = gcalData.items ?? [];
 
-    // Normalize to a Set of YYYY-MM-DD busy date strings
+    // Normalize to sorted array of YYYY-MM-DD strings
     const busySet = new Set();
-
     for (const item of items) {
-      const start = item.start?.date || item.start?.dateTime;
-      const end   = item.end?.date   || item.end?.dateTime;
+      const start    = item.start?.date || item.start?.dateTime;
+      const end      = item.end?.date   || item.end?.dateTime;
       if (!start) continue;
-
       const isAllDay = Boolean(item.start?.date);
       const startStr = isoDateStr(start, false);
       const endStr   = end ? isoDateStr(end, isAllDay) : startStr;
-
-      for (const d of datesBetween(startStr, endStr)) {
-        busySet.add(d);
-      }
+      for (const d of datesBetween(startStr, endStr)) busySet.add(d);
     }
 
-    // Return only the normalized busy dates — nothing else
+    // Return minimal response — only busy dates and timezone
     return NextResponse.json(
-      { busyDates: Array.from(busySet).sort() },
+      {
+        busyDates: Array.from(busySet).sort(),
+        timeZone:  config.timeZone,
+      },
       {
         headers: {
+          // Cache 15 min on CDN, serve stale up to 30 min while revalidating
           'Cache-Control': 'public, s-maxage=900, stale-while-revalidate=1800',
         },
       }
     );
+
   } catch (err) {
-    console.error('[calendar/availability]', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    // Classify caught errors — never expose err.message or stack
+    const code = err?.code || 'INTERNAL_ERROR';
+
+    if (code === 'CREDENTIALS_ERROR') {
+      console.warn('[calendar/availability] Credentials error');
+      return NextResponse.json(
+        { error: 'Calendar availability is temporarily unavailable', code },
+        { status: 503 }
+      );
+    }
+
+    // All other errors (network, crypto, unexpected)
+    console.error('[calendar/availability] Unexpected error code:', code);
+    return NextResponse.json(
+      { error: 'Calendar availability is temporarily unavailable', code: 'INTERNAL_ERROR' },
+      { status: 503 }
+    );
   }
 }
