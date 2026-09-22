@@ -35,7 +35,7 @@ export default function HomeResponsible() {
             }}
           >
             <Image
-              src="https://images.unsplash.com/photo-1551582045-6ec9c11d8697?w=1200&q=85"
+              src="/home/pushkar.jpg"
               alt="Responsible wildlife tourism — Indian Routes & Trails"
               fill
               className="object-cover"

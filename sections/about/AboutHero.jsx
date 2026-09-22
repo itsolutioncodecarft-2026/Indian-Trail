@@ -14,7 +14,7 @@ export default function AboutHero() {
       }}
     >
       <div className="absolute inset-0">
-        <Image src="https://images.unsplash.com/photo-1587474260584-136574528ed5?w=2000&q=85"
+        <Image src="/aagra bg image/agra.jpg"
           alt="India heritage — Indian Routes & Trails" fill priority className="object-cover object-center" sizes="100vw" />
         <div className="absolute inset-0"
           style={{ background: 'linear-gradient(to top, rgba(20,34,77,0.92) 0%, rgba(20,34,77,0.40) 55%, transparent 100%)' }} />

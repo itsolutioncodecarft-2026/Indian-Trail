@@ -14,12 +14,12 @@ import { Suspense } from 'react';
   the top padding doesn't reduce visible content height.
 */
 const HERO_STYLE = {
-  position:   'relative',
-  minHeight:  'clamp(320px, 48vh, 520px)',
-  display:    'flex',
+  position: 'relative',
+  minHeight: 'clamp(380px, 52vh, 560px)',
+  display: 'flex',
   alignItems: 'flex-end',
-  overflow:   'hidden',
-  paddingTop: 'var(--header-height-desktop)',
+  overflow: 'hidden',
+  paddingTop: 'calc(var(--header-height-desktop) + 40px)',
 };
 
 function ContactContent() {
@@ -31,7 +31,7 @@ function ContactContent() {
   return (
     <>
       {/* Hero */}
-      <section style={HERO_STYLE}>
+      <section style={HERO_STYLE} >
         <div className="absolute inset-0">
           <Image
             src="https://images.unsplash.com/photo-1548013146-72479768bada?w=1800&q=85"

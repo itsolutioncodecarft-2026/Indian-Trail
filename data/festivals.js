@@ -171,8 +171,8 @@ export const festivals = [
       es: 'Makar Sankranti marca la transición del sol hacia Capricornio y el inicio de la temporada de cosecha. En Jaipur, Rajasthan celebra con el Festival Internacional de Cometas: las azoteas de toda la ciudad se convierten en plataformas de lanzamiento, y el cielo sobre la Ciudad Rosa se llena de cometas de papel de todos los colores desde el amanecer hasta el anochecer.',
     },
     regions: ['Jaipur', 'Pan-India'],
-   heroImage: '/festivals/holi.png',
-    cardImage: '/festivals/holi.png',
+   heroImage: '/festivals/makar sankranti.jpg',
+    cardImage: '/festivals/makar sankranti.jpg',
     dates: [
       {
         year: 2026,

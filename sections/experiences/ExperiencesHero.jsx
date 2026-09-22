@@ -15,7 +15,7 @@ export default function ExperiencesHero() {
     >
       <div className="absolute inset-0">
         <Image
-          src="https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=2000&q=85"
+          src="/experiance hero/bg hero.jpg"
           alt="Ganga Aarti ceremony, Varanasi — unique experiences with Indian Routes & Trails"
           fill priority className="object-cover object-center" sizes="100vw"
         />

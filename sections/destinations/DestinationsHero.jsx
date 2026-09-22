@@ -15,7 +15,7 @@ export default function DestinationsHero() {
     >
       <div className="absolute inset-0">
         <Image
-          src="https://images.unsplash.com/photo-1599661046289-e31897846e41?w=2000&q=85"
+          src="/about/jodhpur.jpg"
           alt="Mehrangarh Fort, Jodhpur — Indian Routes & Trails destinations"
           fill priority className="object-cover object-center" sizes="100vw"
         />

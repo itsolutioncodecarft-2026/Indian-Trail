@@ -15,7 +15,7 @@ export default function FestivalsHero() {
     >
       <div className="absolute inset-0">
         <Image
-          src="https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=2000&q=85"
+          src="/festival hero/holi.jpg"
           alt="Holi festival of colours — Indian Routes & Trails"
           fill priority className="object-cover object-center" sizes="100vw"
         />
