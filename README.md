@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Indian Routes & Trails
 
-## Getting Started
+**Exclusive India Tours by Om** — a premium travel website built with Next.js 16, Tailwind v4 and the Haveli Indigo design system.
 
-First, run the development server:
+---
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router, JSX only — no TypeScript)
+- **Styling**: Tailwind CSS v4 (`@theme` tokens), CSS custom properties
+- **Fonts**: Cormorant Garamond (display) + Inter (body) via `next/font/google`
+- **Icons**: Lucide React
+- **Deployment**: Vercel
+
+---
+
+## Local Development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# → http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Production Build
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```bash
+npm run build
+npm start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Vercel Deployment
 
-To learn more about Next.js, take a look at the following resources:
+### 1. Import repo on Vercel
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Go to [vercel.com/new](https://vercel.com/new)
+2. Import `itsolutioncodecarft-2026/Indian-Trail`
+3. Framework will be auto-detected as **Next.js**
+4. Root directory: leave as `/` (project root)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 2. Environment Variables
 
-## Deploy on Vercel
+Add the following in **Vercel → Project → Settings → Environment Variables**.  
+These are required for the Google Calendar availability feature.  
+See `.env.example` for setup instructions.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Variable | Description |
+|---|---|
+| `GOOGLE_CALENDAR_ID` | Admin Google Calendar ID (e.g. `abc@group.calendar.google.com`) |
+| `GOOGLE_SERVICE_ACCOUNT_EMAIL` | Service account email from Google Cloud Console |
+| `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` | Full private key from JSON key file (include `-----BEGIN...-----END-----`) |
+| `CALENDAR_LOOKAHEAD_DAYS` | Days ahead to load (default: `90`) |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> **Note:** Without these variables the calendar availability drawer will show an error state — the rest of the site works fully without them.
+
+### 3. Deploy
+
+Click **Deploy**. Vercel will run `npm run build` and deploy.
+
+---
+
+## Project Structure
+
+```
+app/                    Next.js App Router pages + API routes
+  api/calendar/         Google Calendar availability endpoint
+components/             Shared UI components
+  FloatingActionGroup   Floating WhatsApp + Calendar FAB
+  AvailabilityDrawer    Availability calendar drawer
+  Navbar                Header/navigation
+  EnquiryForm           Contact/enquiry form
+data/                   Static data (tours, destinations, festivals)
+hooks/                  Shared React hooks (useCarousel)
+lib/                    Utilities (destImage resolver, language context)
+public/                 Static assets
+  destination/          Destination images
+  experiances/          Experience images (folder name as on disk)
+  festivals/            Festival images
+  journies/             Journey images (folder name as on disk)
+sections/               Page section components
+```
+
+---
+
+## Environment Variables Reference
+
+Copy `.env.example` to `.env.local` (git-ignored) and fill in real values for local development.
+
+```bash
+cp .env.example .env.local
+```
+
+---
+
+## Notes
+
+- **No TypeScript** — all files are `.js` / `.jsx`
+- **No animal rides** — responsible tourism messaging is preserved throughout
+- **Bilingual** — EN/ES toggle via `lib/LanguageContext`
+- All festival dates beyond what was verifiable are marked TODO in `data/festivals.js`

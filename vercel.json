@@ -1,0 +1,12 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "outputDirectory": ".next",
+  "env": {
+    "GOOGLE_CALENDAR_ID": "@google_calendar_id",
+    "GOOGLE_SERVICE_ACCOUNT_EMAIL": "@google_service_account_email",
+    "GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY": "@google_service_account_private_key",
+    "CALENDAR_LOOKAHEAD_DAYS": "@calendar_lookahead_days"
+  }
+}
