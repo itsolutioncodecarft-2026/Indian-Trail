@@ -1,6 +1,5 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useLang } from '@/lib/LanguageContext';
 import { tours } from '@/data/tours';
 import { siteConfig } from '@/data/siteContent';
 import { MessageCircle, Mail, CheckCircle, ArrowRight } from 'lucide-react';
@@ -15,8 +14,8 @@ const inp = {
   outline: 'none', transition: 'border-color 0.2s ease',
   borderRadius: 'var(--radius-control)',
 };
-const inpFocus  = { ...inp, borderColor: 'var(--color-primary)' };
-const inpErr    = { ...inp, borderColor: 'var(--color-error)' };
+const inpFocus = { ...inp, borderColor: 'var(--color-primary)' };
+const inpErr   = { ...inp, borderColor: 'var(--color-error)' };
 const labelStyle = {
   display: 'block',
   fontFamily: 'var(--font-body, Inter, system-ui, sans-serif)',
@@ -25,21 +24,19 @@ const labelStyle = {
 };
 
 export default function EnquiryForm({ defaultTour = '', defaultMessage = '', defaultDate = '' }) {
-  const { lang } = useLang();
   const [form, setForm] = useState({
     name: '', email: '', phone: '', tour: defaultTour,
-    date: defaultDate, travellers: 1, message: defaultMessage, language: lang,
+    date: defaultDate, travellers: 1, message: defaultMessage,
   });
 
-  // Sync defaultDate if it changes (e.g. from URL ?date= param)
+  // Sync defaultDate when it changes (e.g. ?date= URL param)
   useEffect(() => {
-    if (defaultDate) {
-      setForm(f => ({ ...f, date: defaultDate }));
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (defaultDate) setForm(f => ({ ...f, date: defaultDate }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultDate]);
-  const [errors, setErrors]   = useState({});
-  const [focus, setFocus]     = useState({});
+
+  const [errors,    setErrors]    = useState({});
+  const [focus,     setFocus]     = useState({});
   const [submitted, setSubmitted] = useState(false);
 
   const validate = () => {
@@ -65,11 +62,11 @@ export default function EnquiryForm({ defaultTour = '', defaultMessage = '', def
       `*Enquiry — Indian Routes & Trails*`,
       `Name: ${form.name}`,
       `Email: ${form.email}`,
-      form.phone   ? `Phone: ${form.phone}`        : null,
-      form.tour    ? `Journey: ${form.tour}`        : null,
-      form.date    ? `Travel Date: ${form.date}`    : null,
+      form.phone   ? `Phone: ${form.phone}`     : null,
+      form.tour    ? `Journey: ${form.tour}`     : null,
+      form.date    ? `Travel Date: ${form.date}` : null,
       `Travellers: ${form.travellers}`,
-      form.message ? `Message: ${form.message}`     : null,
+      form.message ? `Message: ${form.message}`  : null,
     ].filter(Boolean);
     return encodeURIComponent(lines.join('\n'));
   };
@@ -176,7 +173,7 @@ export default function EnquiryForm({ defaultTour = '', defaultMessage = '', def
           </select>
         </div>
 
-        {/* Travel date — custom calendar with booked dates blocked */}
+        {/* Travel date */}
         <div className="max-sm:col-span-full" style={{ gridColumn: 'span 2' }}>
           <FormDatePicker
             value={form.date}
@@ -193,22 +190,6 @@ export default function EnquiryForm({ defaultTour = '', defaultMessage = '', def
             min={1} max={50} style={inputStyle('travellers')}
             onFocus={() => setFocus(f => ({ ...f, travellers: true }))}
             onBlur={() => setFocus(f => ({ ...f, travellers: false }))} />
-        </div>
-      </div>
-
-      {/* Language */}
-      <div>
-        <label style={labelStyle}>Preferred Language</label>
-        <div style={{ display: 'flex', gap: '20px' }}>
-          {[['en', 'English'], ['es', 'Spanish / Español']].map(([val, lbl]) => (
-            <label key={val}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-              <input type="radio" name="language" value={val}
-                checked={form.language === val} onChange={handleChange}
-                style={{ accentColor: 'var(--color-primary)' }} />
-              <span style={{ fontSize: '13px', color: 'var(--color-text-muted)' }}>{lbl}</span>
-            </label>
-          ))}
         </div>
       </div>
 

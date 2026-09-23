@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useLang } from '@/lib/LanguageContext';
 import Logo from './Logo';
 import { Menu, X } from 'lucide-react';
 
@@ -16,7 +15,6 @@ const NAV_LINKS = [
 ];
 
 export default function Navbar() {
-  const { lang, setLang } = useLang();
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -103,37 +101,8 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* Right: language toggle + Enquire */}
+        {/* Right: Enquire button */}
         <div className="hidden lg:flex items-center gap-4">
-          <div className="flex items-center gap-1" role="group" aria-label="Language selection">
-            {['en', 'es'].map((l, i) => (
-              <span key={l} className="flex items-center">
-                {i > 0 && (
-                  <span className="mx-1 text-xs"
-                    style={{ color: transparent ? 'rgba(255,255,255,0.3)' : 'var(--color-border-strong)' }}>
-                    |
-                  </span>
-                )}
-                <button
-                  onClick={() => setLang(l)}
-                  className="font-sans text-[11px] tracking-[0.15em] uppercase transition-colors duration-300"
-                  aria-pressed={lang === l}
-                  style={{
-                    color: lang === l
-                      ? (transparent ? 'var(--color-secondary)' : 'var(--color-primary)')
-                      : (transparent ? 'rgba(255,255,255,0.5)' : 'var(--color-text-muted)'),
-                    fontWeight: lang === l ? 600 : 500,
-                    textShadow: transparent
-                      ? '0 1px 4px rgba(0,0,0,0.4)'
-                      : '0 1px 2px rgba(20,20,43,0.10)',
-                  }}
-                >
-                  {l.toUpperCase()}
-                </button>
-              </span>
-            ))}
-          </div>
-
           <Link
             href="/contact"
             className="font-sans text-[11px] tracking-[0.18em] uppercase px-5 py-2.5 transition-all duration-300"
@@ -215,27 +184,7 @@ export default function Navbar() {
             Contact
           </Link>
 
-          <div className="flex items-center justify-between pt-4 mt-1">
-            <div className="flex items-center gap-2" role="group" aria-label="Language selection">
-              {['en', 'es'].map((l, i) => (
-                <span key={l} className="flex items-center">
-                  {i > 0 && (
-                    <span className="mx-1 text-xs" style={{ color: 'var(--color-border-strong)' }}>|</span>
-                  )}
-                  <button
-                    onClick={() => setLang(l)}
-                    className="font-sans text-xs tracking-widest uppercase"
-                    aria-pressed={lang === l}
-                    style={{
-                      color:      lang === l ? 'var(--color-primary)' : 'var(--color-text-muted)',
-                      fontWeight: lang === l ? 500 : 400,
-                    }}
-                  >
-                    {l.toUpperCase()}
-                  </button>
-                </span>
-              ))}
-            </div>
+          <div className="flex items-center justify-end pt-4 mt-1">
             <Link
               href="/contact"
               className="font-sans text-xs tracking-[0.18em] uppercase px-5 py-2.5"
