@@ -576,10 +576,96 @@
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
 
-/* ── Availability Drawer animations ────────────────────────────── */
+/* ── HeroSelect dropdown panel animation ───────────────────────
+   Plays on open. Close is immediate (portal unmounts).
+   Respects prefers-reduced-motion via the global rule above.
+────────────────────────────────────────────────────────────── */
+@keyframes heroSelectOpen {
+  from {
+    opacity:   0;
+    transform: translateY(-6px) scaleY(0.96);
+  }
+  to {
+    opacity:   1;
+    transform: translateY(0px) scaleY(1);
+  }
+}
+/* Flip-up variant uses translateY positive */
+@keyframes heroSelectOpenUp {
+  from {
+    opacity:   0;
+    transform: translateY(6px) scaleY(0.96);
+  }
+  to {
+    opacity:   1;
+    transform: translateY(0px) scaleY(1);
+  }
+}
+
+/* ── Availability Edge-Tab ──────────────────────────────────────
+
+  Two-wrapper pattern prevents transform collision:
+    .avail-tab-desktop-wrapper  →  translateY(-50%)  [vertical centre, never animated]
+    .avail-tab-nudge            →  translateX(...)   [horizontal nudge ONLY]
+
+  Nudge: 12px inward travel, 3.5s ease-in-out, infinite alternate.
+  Small pause at endpoints is natural from ease-in-out curve.
+  Paused via .avail-tab-nudge--paused (hover / focus).
+  Disabled entirely under prefers-reduced-motion.
+
+  Body overflow-x guard below prevents any page-level horizontal scroll
+  that the off-screen portion of the tab might otherwise cause.
+────────────────────────────────────────────────────────────────── */
+
+/* Prevent edge-tab from causing horizontal scroll */
+body { overflow-x: hidden; }
+
+@keyframes avail-nudge {
+  from { transform: translateX(0px);   }
+  to   { transform: translateX(-12px); }
+}
+
+.avail-tab-nudge {
+  display:                   block;
+  animation-name:            avail-nudge;
+  animation-duration:        3.5s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction:       alternate;
+  animation-fill-mode:       both;
+  /* Prevent the animated element from causing overflow */
+  will-change:               transform;
+}
+
+/* Pause on hover / focus — JS adds this class */
+.avail-tab-nudge--paused {
+  animation-play-state: paused;
+}
+
+/* Reduced-motion: kill animation, keep control fully visible */
+@media (prefers-reduced-motion: reduce) {
+  .avail-tab-nudge {
+    animation:  none !important;
+    transform:  translateX(0px) !important;
+    transition: none !important;
+    will-change: auto !important;
+  }
+}
+
+/* Desktop (≥768px): right-edge tab visible, mobile button hidden */
+.avail-tab-desktop-wrapper { display: block; }
+.avail-tab-mobile-wrapper  { display: none;  }
+
+/* Mobile (<768px): compact button visible, desktop tab hidden */
+@media (max-width: 767px) {
+  .avail-tab-desktop-wrapper { display: none;  }
+  .avail-tab-mobile-wrapper  { display: block; }
+}
+
+/* ── Drawer slide-in animations ─────────────────────────────── */
 @keyframes slideInRight {
   from { transform: translateX(100%); }
-  to   { transform: translateX(0); }
+  to   { transform: translateX(0);    }
 }
 @keyframes pulse {
   0%, 100% { opacity: 1; }
