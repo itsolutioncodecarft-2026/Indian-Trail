@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLang } from '@/lib/LanguageContext';
 import { tours } from '@/data/tours';
 import { siteConfig } from '@/data/siteContent';
@@ -30,6 +30,14 @@ export default function EnquiryForm({ defaultTour = '', defaultMessage = '', def
     name: '', email: '', phone: '', tour: defaultTour,
     date: defaultDate, travellers: 1, message: defaultMessage, language: lang,
   });
+
+  // Sync defaultDate if it changes (e.g. from URL ?date= param)
+  useEffect(() => {
+    if (defaultDate) {
+      setForm(f => ({ ...f, date: defaultDate }));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultDate]);
   const [errors, setErrors]   = useState({});
   const [focus, setFocus]     = useState({});
   const [submitted, setSubmitted] = useState(false);
@@ -174,6 +182,7 @@ export default function EnquiryForm({ defaultTour = '', defaultMessage = '', def
             value={form.date}
             onChange={(iso) => setForm(f => ({ ...f, date: iso }))}
             labelStyle={labelStyle}
+            initialMonth={defaultDate}
           />
         </div>
 

@@ -2,65 +2,66 @@
 /**
  * AvailabilityDrawer
  * ─────────────────────────────────────────────────────────────────
- * Slide-in drawer showing admin Google Calendar availability.
- * Desktop: right-edge panel ~400px wide, full height.
- * Mobile: bottom sheet, full width.
+ * Slide-in drawer showing Google Calendar availability.
+ * Uses shared useCalendarEvents hook — same data as EnquiryForm.
  *
- * Accessibility:
- *   role="dialog" aria-modal="true" aria-labelledby
- *   Focus trap (Tab / Shift+Tab cycle within drawer)
- *   Escape closes; backdrop click closes
- *   Focus returns to trigger on close
- *   Body scroll locked while open
- *   Unavailable cells: aria-disabled="true", not keyboard-selectable
- *   Disabled message inline on click
+ * Features:
+ *   - Real Indian holiday names from Google Calendar (Diwali/Deepavali, Holi…)
+ *   - Multiple festivals on same date: first label + "+N more" chip
+ *   - Selected-date details panel shows ALL festival names in full
+ *   - Festival dates remain selectable (blocksAvailability:false)
+ *   - Booking-blocked dates shown as unavailable (strikethrough)
+ *   - Festival + booking on same date: name visible, date disabled
+ *   - Continue to Enquiry → /contact?date=YYYY-MM-DD
+ *
+ * Accessibility: role="dialog", focus trap, Escape closes, body lock.
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { X, ChevronLeft, ChevronRight, Calendar, AlertCircle, CalendarDays } from 'lucide-react';
-import { getEventsForDate } from '@/lib/calendarUtils';
+import { useCalendarEvents } from '@/hooks/useCalendarEvents';
+import { getFestivalsForDate, isDateBlocked } from '@/lib/calendarUtils';
 
-/* ── helpers ─────────────────────────────────────────────────────── */
+/* ── constants ───────────────────────────────────────────────────── */
 const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-const MONTHS   = ['January','February','March','April','May','June',
-                  'July','August','September','October','November','December'];
+const MONTHS   = [
+  'January','February','March','April','May','June',
+  'July','August','September','October','November','December',
+];
 
 function toIso(year, month1, day) {
   return `${year}-${String(month1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
 }
 function todayIso() { return new Date().toISOString().slice(0, 10); }
 
-/** Build a 6-row grid of {iso, day, inMonth, isPast, isToday} */
 function buildGrid(year, month0) {
-  const today    = todayIso();
-  const firstDay = new Date(year, month0, 1).getDay(); // 0=Sun
-  const daysInM  = new Date(year, month0 + 1, 0).getDate();
-  const cells    = [];
-  // leading blanks
-  for (let i = 0; i < firstDay; i++) cells.push(null);
+  const today   = todayIso();
+  const first   = new Date(year, month0, 1).getDay();
+  const daysInM = new Date(year, month0 + 1, 0).getDate();
+  const cells   = [];
+  for (let i = 0; i < first; i++) cells.push(null);
   for (let d = 1; d <= daysInM; d++) {
     const iso = toIso(year, month0 + 1, d);
-    cells.push({ iso, day: d, inMonth: true, isPast: iso < today, isToday: iso === today });
+    cells.push({ iso, day: d, isPast: iso < today, isToday: iso === today });
   }
-  // trailing blanks to fill 6 rows
   while (cells.length < 42) cells.push(null);
   return cells;
 }
 
 /* ── focus trap ──────────────────────────────────────────────────── */
 const FOCUSABLE = 'a[href],button:not([disabled]),input,select,textarea,[tabindex]:not([tabindex="-1"])';
+
 function trapFocus(e, panelRef) {
   const els = Array.from(panelRef.current?.querySelectorAll(FOCUSABLE) ?? []);
   if (!els.length) return;
   const first = els[0];
   const last  = els[els.length - 1];
-  if (e.key === 'Tab') {
-    if (e.shiftKey && document.activeElement === first) {
-      e.preventDefault(); last.focus();
-    } else if (!e.shiftKey && document.activeElement === last) {
-      e.preventDefault(); first.focus();
-    }
+  if (e.key !== 'Tab') return;
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault(); last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault(); first.focus();
   }
 }
 
@@ -68,61 +69,78 @@ function trapFocus(e, panelRef) {
 function LegendChip({ color, label }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-      <span style={{ width: '10px', height: '10px', borderRadius: '2px', backgroundColor: color, flexShrink: 0 }} />
-      <span style={{ fontFamily: 'var(--font-body, system-ui)', fontSize: '10px', color: 'var(--color-text-muted)' }}>
+      <span style={{
+        width: '10px', height: '10px', borderRadius: '2px',
+        backgroundColor: color, flexShrink: 0,
+      }} />
+      <span style={{
+        fontFamily: 'var(--font-body, system-ui)', fontSize: '10px',
+        color: 'var(--color-text-muted)',
+      }}>
         {label}
       </span>
     </div>
   );
 }
 
+/* ── Festival pills (cell) ───────────────────────────────────────── */
+function FestivalMicro({ festivals, selected }) {
+  if (!festivals.length) return null;
+  const first = festivals[0].title;
+  return (
+    <span
+      title={festivals.map(f => f.title).join(' · ')}
+      style={{
+        fontSize: '7px', fontWeight: 500, lineHeight: 1.1,
+        letterSpacing: '0.03em',
+        color: selected ? 'rgba(255,255,255,0.85)' : 'var(--color-secondary-hover)',
+        maxWidth: '100%', overflow: 'hidden',
+        textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+        display: 'block', textDecoration: 'none',
+      }}
+    >
+      {first.length > 7 ? first.slice(0, 6) + '…' : first}
+      {festivals.length > 1 && ` +${festivals.length - 1}`}
+    </span>
+  );
+}
+
 /* ── main component ──────────────────────────────────────────────── */
 export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
   const router = useRouter();
+  const today0 = new Date();
 
-  // Calendar state
-  const today0     = new Date();
   const [viewYear,  setViewYear]  = useState(today0.getFullYear());
-  const [viewMonth, setViewMonth] = useState(today0.getMonth()); // 0-based
-
-  // Data state — now uses full events list from /api/booked-dates
-  const [calEvents,     setCalEvents]     = useState(null);  // null=loading
-  const [loadError,     setLoadError]     = useState(false);
-  const [notConfigured, setNotConfigured] = useState(false);
-  const [loadingMonth,  setLoadingMonth]  = useState('');
-
-  // Selection
-  const [selected,      setSelected]      = useState(null);  // ISO string
-  const [disabledMsg,   setDisabledMsg]   = useState(null);  // {iso, msg}
+  const [viewMonth, setViewMonth] = useState(today0.getMonth());
+  const [selected,    setSelected]    = useState(null);
+  const [disabledMsg, setDisabledMsg] = useState(null);
 
   const panelRef = useRef(null);
-  const monthKey = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}`;
+
+  // Shared calendar events hook — fires when drawer opens
+  const { events, loading, error, notConfigured, retry } = useCalendarEvents(open);
 
   /* ── body scroll lock ────────────────────────────────────────── */
   useEffect(() => {
-    if (open) {
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = prev; };
-    }
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
   }, [open]);
 
   /* ── focus management ────────────────────────────────────────── */
   useEffect(() => {
     if (open) {
-      // focus first focusable in panel after transition
       const t = setTimeout(() => {
-        const el = panelRef.current?.querySelector(FOCUSABLE);
-        el?.focus();
+        panelRef.current?.querySelector(FOCUSABLE)?.focus();
       }, 320);
       return () => clearTimeout(t);
     } else {
-      // return focus to trigger
       triggerRef?.current?.focus();
     }
   }, [open, triggerRef]);
 
-  /* ── keyboard trap + Escape ──────────────────────────────────── */
+  /* ── keyboard: Escape + focus trap ──────────────────────────── */
   useEffect(() => {
     if (!open) return;
     const handler = (e) => {
@@ -132,33 +150,6 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, [open, onClose]);
-
-  /* ── load availability data — fetched once per drawer open ─────── */
-  const loadMonth = useCallback(async () => {
-    setLoadingMonth('loading');
-    setLoadError(false);
-    setNotConfigured(false);
-    setCalEvents(null);
-    try {
-      const res  = await fetch('/api/booked-dates');
-      const data = await res.json().catch(() => ({}));
-
-      if (!res.ok && data?.code === 'CALENDAR_NOT_CONFIGURED') {
-        setNotConfigured(true);
-        return;
-      }
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      setCalEvents(data.events ?? []);
-    } catch {
-      setLoadError(true);
-    } finally {
-      setLoadingMonth('');
-    }
-  }, []);
-
-  useEffect(() => {
-    if (open) loadMonth();
-  }, [open, loadMonth]);
 
   /* ── navigation ──────────────────────────────────────────────── */
   const prevMonth = () => {
@@ -177,14 +168,9 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
     setSelected(null); setDisabledMsg(null);
   };
 
-  /* ── cell interaction ────────────────────────────────────────── */
-  const dayEvents = calEvents ? getEventsForDate(calEvents, '') : [];
-
-  const isBusy = (iso) => {
-    if (!calEvents) return false;
-    const evs = getEventsForDate(calEvents, iso);
-    return evs.length > 0;
-  };
+  /* ── cell helpers ────────────────────────────────────────────── */
+  const isBusy     = (iso) => isDateBlocked(events, iso);
+  const getHols    = (iso) => getFestivalsForDate(events, iso);
 
   const handleCellClick = (cell) => {
     if (!cell) return;
@@ -193,14 +179,14 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
       return;
     }
     if (isBusy(cell.iso)) {
-      setDisabledMsg({ iso: cell.iso, msg: "This date can't be selected" });
+      setDisabledMsg({ iso: cell.iso, msg: 'This date is unavailable' });
       return;
     }
     setSelected(cell.iso);
     setDisabledMsg(null);
   };
 
-  const handleCellKeyDown = (e, cell) => {
+  const handleKeyDown = (e, cell) => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCellClick(cell); }
   };
 
@@ -208,14 +194,13 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
   const handleContinue = () => {
     if (!selected) return;
     onClose();
-    router.push(`/contact?date=${selected}`);
+    router.push(`/contact?date=${encodeURIComponent(selected)}`);
   };
 
-  /* ── calendar grid ───────────────────────────────────────────── */
-  const grid = buildGrid(viewYear, viewMonth);
-
-  /* ── styles ──────────────────────────────────────────────────── */
-  const isPrevDisabled = viewYear === today0.getFullYear() && viewMonth <= today0.getMonth();
+  /* ── derived ─────────────────────────────────────────────────── */
+  const grid              = buildGrid(viewYear, viewMonth);
+  const isPrevDisabled    = viewYear === today0.getFullYear() && viewMonth <= today0.getMonth();
+  const selectedFestivals = selected ? getHols(selected) : [];
 
   if (!open) return null;
 
@@ -226,61 +211,45 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
         aria-hidden="true"
         onClick={onClose}
         style={{
-          position:        'fixed',
-          inset:           0,
-          zIndex:          59,
+          position: 'fixed', inset: 0, zIndex: 59,
           backgroundColor: 'rgba(20,20,43,0.55)',
-          backdropFilter:  'blur(3px)',
-          WebkitBackdropFilter: 'blur(3px)',
-          animation:       'fadeIn 250ms ease forwards',
+          backdropFilter: 'blur(3px)', WebkitBackdropFilter: 'blur(3px)',
+          animation: 'fadeIn 250ms ease forwards',
         }}
       />
 
-      {/* Drawer panel */}
+      {/* Panel */}
       <div
         ref={panelRef}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="drawer-title"
-        style={{
-          position:        'fixed',
-          zIndex:          60,
-          backgroundColor: 'var(--color-surface)',
-          overflowY:       'auto',
-          display:         'flex',
-          flexDirection:   'column',
-          /* Desktop: right panel */
-          top:             0,
-          right:           0,
-          bottom:          0,
-          width:           'min(420px, 100vw)',
-          boxShadow:       '-4px 0 32px rgba(20,20,43,0.18)',
-          animation:       'slideInRight 300ms cubic-bezier(0.4,0,0.2,1) forwards',
-        }}
-        /* Mobile override via media query is applied in globals via className */
+        aria-labelledby="avail-drawer-title"
         className="availability-drawer"
+        style={{
+          position: 'fixed', zIndex: 60,
+          top: 0, right: 0, bottom: 0,
+          width: 'min(420px, 100vw)',
+          backgroundColor: 'var(--color-surface)',
+          boxShadow: '-4px 0 32px rgba(20,20,43,0.18)',
+          display: 'flex', flexDirection: 'column',
+          overflowY: 'auto',
+          animation: 'slideInRight 300ms cubic-bezier(0.4,0,0.2,1) forwards',
+        }}
       >
-        {/* Header */}
-        <div
-          style={{
-            display:        'flex',
-            alignItems:     'center',
-            justifyContent: 'space-between',
-            padding:        '18px 20px 14px',
-            borderBottom:   '1px solid var(--color-border)',
-            flexShrink:     0,
-          }}
-        >
+        {/* ── Header ────────────────────────────────────────────── */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '18px 20px 14px',
+          borderBottom: '1px solid var(--color-border)', flexShrink: 0,
+        }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <Calendar size={18} style={{ color: 'var(--color-primary)' }} />
             <h2
-              id="drawer-title"
+              id="avail-drawer-title"
               style={{
                 fontFamily: 'var(--font-display, Georgia, serif)',
-                fontSize:   '1.1rem',
-                fontWeight: 400,
-                color:      'var(--color-text)',
-                margin:     0,
+                fontSize: '1.1rem', fontWeight: 400,
+                color: 'var(--color-text)', margin: 0,
               }}
             >
               Check Available Dates
@@ -290,17 +259,11 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
             onClick={onClose}
             aria-label="Close availability calendar"
             style={{
-              display:         'flex',
-              alignItems:      'center',
-              justifyContent:  'center',
-              width:           '36px',
-              height:          '36px',
-              borderRadius:    '50%',
-              border:          'none',
-              backgroundColor: 'transparent',
-              cursor:          'pointer',
-              color:           'var(--color-text-muted)',
-              transition:      'background-color 180ms ease',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: '36px', height: '36px', borderRadius: '50%',
+              border: 'none', backgroundColor: 'transparent',
+              cursor: 'pointer', color: 'var(--color-text-muted)',
+              transition: 'background-color 180ms ease',
             }}
             onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-surface-alt)'}
             onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
@@ -309,32 +272,22 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
           </button>
         </div>
 
-        {/* Month navigation */}
-        <div
-          style={{
-            display:        'flex',
-            alignItems:     'center',
-            justifyContent: 'space-between',
-            padding:        '12px 20px',
-            flexShrink:     0,
-          }}
-        >
+        {/* ── Month nav ─────────────────────────────────────────── */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '12px 20px', flexShrink: 0,
+        }}>
           <button
             onClick={prevMonth}
             disabled={isPrevDisabled}
             aria-label="Previous month"
             style={{
-              display:         'flex',
-              alignItems:      'center',
-              justifyContent:  'center',
-              width:           '32px',
-              height:          '32px',
-              borderRadius:    '50%',
-              border:          'none',
-              backgroundColor: 'transparent',
-              cursor:          isPrevDisabled ? 'default' : 'pointer',
-              color:           isPrevDisabled ? 'var(--color-border-strong)' : 'var(--color-text)',
-              transition:      'background-color 180ms ease',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: '32px', height: '32px', borderRadius: '50%',
+              border: 'none', backgroundColor: 'transparent',
+              cursor: isPrevDisabled ? 'default' : 'pointer',
+              color: isPrevDisabled ? 'var(--color-border-strong)' : 'var(--color-text)',
+              transition: 'background-color 180ms ease',
             }}
             onMouseEnter={e => { if (!isPrevDisabled) e.currentTarget.style.backgroundColor = 'var(--color-surface-alt)'; }}
             onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
@@ -342,33 +295,23 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
             <ChevronLeft size={16} />
           </button>
 
-          <div style={{ textAlign: 'center' }}>
-            <p style={{
-              fontFamily: 'var(--font-display, Georgia, serif)',
-              fontSize:   '1rem',
-              fontWeight: 400,
-              color:      'var(--color-text)',
-              margin:     0,
-            }}>
-              {MONTHS[viewMonth]} {viewYear}
-            </p>
-          </div>
+          <p style={{
+            fontFamily: 'var(--font-display, Georgia, serif)',
+            fontSize: '1rem', fontWeight: 400,
+            color: 'var(--color-text)', margin: 0,
+          }}>
+            {MONTHS[viewMonth]} {viewYear}
+          </p>
 
           <button
             onClick={nextMonth}
             aria-label="Next month"
             style={{
-              display:         'flex',
-              alignItems:      'center',
-              justifyContent:  'center',
-              width:           '32px',
-              height:          '32px',
-              borderRadius:    '50%',
-              border:          'none',
-              backgroundColor: 'transparent',
-              cursor:          'pointer',
-              color:           'var(--color-text)',
-              transition:      'background-color 180ms ease',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: '32px', height: '32px', borderRadius: '50%',
+              border: 'none', backgroundColor: 'transparent',
+              cursor: 'pointer', color: 'var(--color-text)',
+              transition: 'background-color 180ms ease',
             }}
             onMouseEnter={e => e.currentTarget.style.backgroundColor = 'var(--color-surface-alt)'}
             onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
@@ -377,99 +320,75 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
           </button>
         </div>
 
-        {/* Weekday headers */}
-        <div
-          style={{
-            display:             'grid',
-            gridTemplateColumns: 'repeat(7, 1fr)',
-            padding:             '0 16px',
-            marginBottom:        '4px',
-            flexShrink:          0,
-          }}
-        >
-          {WEEKDAYS.map((d) => (
+        {/* ── Weekday headers ───────────────────────────────────── */}
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)',
+          padding: '0 16px', marginBottom: '4px', flexShrink: 0,
+        }}>
+          {WEEKDAYS.map(d => (
             <div key={d} style={{
-              textAlign:     'center',
-              fontFamily:    'var(--font-body, system-ui)',
-              fontSize:      '10px',
-              fontWeight:    500,
-              letterSpacing: '0.1em',
-              color:         'var(--color-text-muted)',
-              padding:       '2px 0 6px',
+              textAlign: 'center',
+              fontFamily: 'var(--font-body, system-ui)',
+              fontSize: '10px', fontWeight: 500,
+              letterSpacing: '0.1em', color: 'var(--color-text-muted)',
+              padding: '2px 0 6px',
             }}>
               {d}
             </div>
           ))}
         </div>
 
-        {/* Calendar grid */}
+        {/* ── Calendar grid ─────────────────────────────────────── */}
         <div style={{ padding: '0 16px', flex: 1, minHeight: 0 }}>
+
           {/* Loading skeleton */}
-          {(calEvents === null && !loadError && !notConfigured) && (
-            <div
-              style={{
-                display:             'grid',
-                gridTemplateColumns: 'repeat(7, 1fr)',
-                gap:                 '4px',
-              }}
-            >
+          {loading && !error && !notConfigured && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
               {Array.from({ length: 35 }).map((_, i) => (
-                <div
-                  key={i}
-                  style={{
-                    height:        '36px',
-                    borderRadius:  'var(--radius-control)',
-                    backgroundColor: 'var(--color-border)',
-                    animation:     'pulse 1.4s ease-in-out infinite',
-                    animationDelay: `${(i % 7) * 60}ms`,
-                  }}
-                />
+                <div key={i} style={{
+                  height: '36px', borderRadius: 'var(--radius-control)',
+                  backgroundColor: 'var(--color-border)',
+                  animation: 'pulse 1.4s ease-in-out infinite',
+                  animationDelay: `${(i % 7) * 60}ms`,
+                }} />
               ))}
             </div>
           )}
 
-          {/* Not configured — graceful unavailable */}
+          {/* Not configured */}
           {notConfigured && (
             <div style={{ textAlign: 'center', padding: '32px 16px' }}>
               <CalendarDays size={32} style={{ color: 'var(--color-border-strong)', margin: '0 auto 10px' }} />
               <p style={{
-                fontFamily: 'var(--font-body, system-ui)',
-                fontSize:   '13px',
-                color:      'var(--color-text-muted)',
-                margin:     0,
-                lineHeight: 1.5,
+                fontFamily: 'var(--font-body, system-ui)', fontSize: '13px',
+                color: 'var(--color-text-muted)', margin: 0, lineHeight: 1.5,
               }}>
                 Availability is temporarily unavailable.
               </p>
             </div>
           )}
 
-          {/* Error / retry */}
-          {loadError && (
+          {/* Error + retry */}
+          {error && !notConfigured && (
             <div style={{ textAlign: 'center', padding: '24px 16px' }}>
               <AlertCircle size={28} style={{ color: 'var(--color-error)', margin: '0 auto 8px' }} />
               <p style={{
-                fontFamily: 'var(--font-body, system-ui)',
-                fontSize:   '13px',
-                color:      'var(--color-text-muted)',
-                margin:     '0 0 12px',
+                fontFamily: 'var(--font-body, system-ui)', fontSize: '13px',
+                color: 'var(--color-text-muted)', margin: '0 0 12px',
               }}>
                 Availability is temporarily unavailable.
               </p>
               <button
-                onClick={() => loadMonth()}
+                onClick={retry}
                 aria-label="Retry loading availability"
                 style={{
-                  fontFamily:      'var(--font-body, system-ui)',
-                  fontSize:        '11px',
-                  letterSpacing:   '0.14em',
-                  textTransform:   'uppercase',
-                  padding:         '8px 18px',
+                  fontFamily: 'var(--font-body, system-ui)',
+                  fontSize: '11px', letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                  padding: '8px 18px',
                   backgroundColor: 'var(--color-primary)',
-                  color:           '#fff',
-                  border:          'none',
-                  borderRadius:    'var(--radius-control)',
-                  cursor:          'pointer',
+                  color: '#fff', border: 'none',
+                  borderRadius: 'var(--radius-control)', cursor: 'pointer',
                 }}
               >
                 Retry
@@ -478,23 +397,20 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
           )}
 
           {/* Loaded grid */}
-          {calEvents !== null && !loadError && !notConfigured && (
-            <div
-              style={{
-                display:             'grid',
-                gridTemplateColumns: 'repeat(7, 1fr)',
-                gap:                 '3px',
-              }}
-            >
+          {!loading && !error && !notConfigured && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '3px' }}>
               {grid.map((cell, idx) => {
                 if (!cell) return <div key={idx} />;
-                const busy     = isBusy(cell.iso);
-                const disabled  = cell.isPast || busy;
-                const isSelected = selected === cell.iso;
-                const showMsg   = disabledMsg?.iso === cell.iso;
 
-                let bg = 'transparent';
-                let fg = 'var(--color-text)';
+                const busy       = isBusy(cell.iso);
+                const hols       = getHols(cell.iso);
+                const hasHol     = hols.length > 0;
+                const disabled   = cell.isPast || busy;
+                const isSelected = selected === cell.iso;
+                const showMsg    = disabledMsg?.iso === cell.iso;
+
+                let bg     = 'transparent';
+                let fg     = 'var(--color-text)';
                 let border = '1px solid transparent';
                 let cursor = 'pointer';
 
@@ -508,6 +424,8 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
                   fg = 'var(--color-border-strong)';
                   cursor = 'default';
                   if (busy) bg = 'rgba(20,34,77,0.06)';
+                } else if (hasHol) {
+                  bg = 'rgba(232,163,23,0.10)';
                 }
 
                 return (
@@ -518,71 +436,65 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
                       aria-label={
                         cell.isPast ? `${cell.iso} — past date` :
                         busy        ? `${cell.iso} — unavailable` :
-                                     `Select ${cell.iso}`
+                        hasHol      ? `${cell.iso} — ${hols.map(f => f.title).join(', ')}` :
+                                      `Select ${cell.iso}`
                       }
                       aria-disabled={disabled ? 'true' : undefined}
                       aria-pressed={isSelected ? 'true' : undefined}
                       onClick={() => handleCellClick(cell)}
-                      onKeyDown={(e) => !disabled && handleCellKeyDown(e, cell)}
+                      onKeyDown={e => !disabled && handleKeyDown(e, cell)}
                       style={{
-                        display:         'flex',
-                        alignItems:      'center',
-                        justifyContent:  'center',
-                        height:          '36px',
-                        borderRadius:    'var(--radius-control)',
-                        backgroundColor: bg,
-                        color:           fg,
-                        border,
-                        cursor,
-                        fontFamily:      'var(--font-body, system-ui)',
-                        fontSize:        '12px',
-                        fontWeight:      isSelected || cell.isToday ? 500 : 400,
-                        transition:      'background-color 160ms ease, border-color 160ms ease',
-                        outline:         'none',
-                        textDecoration:  busy && !cell.isPast ? 'line-through' : 'none',
-                        opacity:         cell.isPast ? 0.38 : 1,
-                        userSelect:      'none',
+                        display: 'flex', flexDirection: 'column',
+                        alignItems: 'center', justifyContent: 'center',
+                        minHeight: hasHol ? '44px' : '36px',
+                        padding: '2px 1px',
+                        borderRadius: 'var(--radius-control)',
+                        backgroundColor: bg, color: fg, border, cursor,
+                        fontFamily: 'var(--font-body, system-ui)',
+                        fontSize: '12px',
+                        fontWeight: isSelected || cell.isToday ? 500 : 400,
+                        transition: 'background-color 160ms ease, border-color 160ms ease',
+                        outline: 'none',
+                        textDecoration: busy && !cell.isPast ? 'line-through' : 'none',
+                        opacity: cell.isPast ? 0.38 : 1,
+                        userSelect: 'none', gap: '2px',
                       }}
                       onMouseEnter={e => {
                         if (!disabled && !isSelected)
-                          e.currentTarget.style.backgroundColor = 'var(--color-surface-alt)';
+                          e.currentTarget.style.backgroundColor =
+                            hasHol ? 'rgba(232,163,23,0.18)' : 'var(--color-surface-alt)';
                       }}
                       onMouseLeave={e => {
                         if (!disabled && !isSelected)
                           e.currentTarget.style.backgroundColor = bg;
                       }}
                     >
-                      {cell.day}
+                      <span>{cell.day}</span>
+                      {hasHol && <FestivalMicro festivals={hols} selected={isSelected} />}
                     </div>
-                    {/* Inline disabled message */}
+
+                    {/* Inline disabled tooltip */}
                     {showMsg && (
                       <div
                         role="alert"
                         style={{
-                          position:        'absolute',
-                          bottom:          'calc(100% + 4px)',
-                          left:            '50%',
-                          transform:       'translateX(-50%)',
-                          backgroundColor: 'var(--color-text)',
-                          color:           '#fff',
-                          fontFamily:      'var(--font-body, system-ui)',
-                          fontSize:        '9px',
-                          whiteSpace:      'nowrap',
-                          padding:         '4px 8px',
-                          borderRadius:    '4px',
-                          zIndex:          10,
-                          pointerEvents:   'none',
+                          position: 'absolute',
+                          bottom: 'calc(100% + 4px)', left: '50%',
+                          transform: 'translateX(-50%)',
+                          backgroundColor: 'var(--color-text)', color: '#fff',
+                          fontFamily: 'var(--font-body, system-ui)',
+                          fontSize: '9px', whiteSpace: 'nowrap',
+                          padding: '4px 8px', borderRadius: '4px',
+                          zIndex: 10, pointerEvents: 'none',
                         }}
                       >
                         {disabledMsg.msg}
                         <span style={{
-                          position:        'absolute',
-                          bottom:          '-4px',
-                          left:            '50%',
-                          transform:       'translateX(-50%)',
-                          borderLeft:      '4px solid transparent',
-                          borderRight:     '4px solid transparent',
-                          borderTop:       '4px solid var(--color-text)',
+                          position: 'absolute', bottom: '-4px', left: '50%',
+                          transform: 'translateX(-50%)',
+                          borderLeft: '4px solid transparent',
+                          borderRight: '4px solid transparent',
+                          borderTop: '4px solid var(--color-text)',
                         }} />
                       </div>
                     )}
@@ -593,59 +505,46 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
           )}
         </div>
 
-        {/* Legend */}
-        <div
-          style={{
-            display:    'flex',
-            gap:        '16px',
-            flexWrap:   'wrap',
-            padding:    '14px 20px 0',
-            flexShrink: 0,
-          }}
-        >
-          <LegendChip color="var(--color-primary)" label="Available" />
-          <LegendChip color="rgba(20,34,77,0.15)"  label="Unavailable" />
-          <LegendChip color="var(--color-border)"   label="Past" />
+        {/* ── Legend ────────────────────────────────────────────── */}
+        <div style={{
+          display: 'flex', gap: '14px', flexWrap: 'wrap',
+          padding: '14px 20px 0', flexShrink: 0,
+        }}>
+          <LegendChip color="var(--color-primary)"    label="Available" />
+          <LegendChip color="rgba(232,163,23,0.35)"   label="Festival / Holiday" />
+          <LegendChip color="rgba(20,34,77,0.15)"     label="Unavailable" />
+          <LegendChip color="rgba(0,0,0,0.15)"        label="Past" />
         </div>
 
-        {/* Today button */}
+        {/* ── Today link ────────────────────────────────────────── */}
         <div style={{ padding: '8px 20px 4px', flexShrink: 0 }}>
           <button
             onClick={goToday}
             style={{
-              fontFamily:      'var(--font-body, system-ui)',
-              fontSize:        '10px',
-              letterSpacing:   '0.14em',
-              textTransform:   'uppercase',
-              color:           'var(--color-primary)',
-              backgroundColor: 'transparent',
-              border:          'none',
-              cursor:          'pointer',
-              padding:         '4px 0',
-              textDecoration:  'underline',
-              textUnderlineOffset: '2px',
+              fontFamily: 'var(--font-body, system-ui)',
+              fontSize: '10px', letterSpacing: '0.14em',
+              textTransform: 'uppercase', color: 'var(--color-primary)',
+              backgroundColor: 'transparent', border: 'none',
+              cursor: 'pointer', padding: '4px 0',
+              textDecoration: 'underline', textUnderlineOffset: '2px',
             }}
           >
             Today
           </button>
         </div>
 
-        {/* Selected date + CTA */}
-        <div
-          style={{
-            padding:      '12px 20px 20px',
-            borderTop:    '1px solid var(--color-border)',
-            marginTop:    'auto',
-            flexShrink:   0,
-          }}
-        >
+        {/* ── Selected date + festival details + CTA ────────────── */}
+        <div style={{
+          padding: '12px 20px 20px',
+          borderTop: '1px solid var(--color-border)',
+          marginTop: 'auto', flexShrink: 0,
+        }}>
           {selected ? (
             <>
               <p style={{
-                fontFamily:   'var(--font-body, system-ui)',
-                fontSize:     '11px',
-                color:        'var(--color-text-muted)',
-                marginBottom: '10px',
+                fontFamily: 'var(--font-body, system-ui)',
+                fontSize: '11px', color: 'var(--color-text-muted)',
+                marginBottom: selectedFestivals.length ? '6px' : '10px',
               }}>
                 Selected:{' '}
                 <strong style={{ color: 'var(--color-text)' }}>
@@ -654,6 +553,30 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
                   })}
                 </strong>
               </p>
+
+              {/* All festival names in full */}
+              {selectedFestivals.length > 0 && (
+                <div style={{
+                  display: 'flex', flexWrap: 'wrap', gap: '6px',
+                  marginBottom: '10px',
+                }}>
+                  {selectedFestivals.map(f => (
+                    <span key={f.id} style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '5px',
+                      padding: '3px 9px',
+                      backgroundColor: 'rgba(232,163,23,0.12)',
+                      border: '1px solid rgba(232,163,23,0.30)',
+                      borderRadius: '999px',
+                      fontFamily: 'var(--font-body, system-ui)',
+                      fontSize: '10px', fontWeight: 500,
+                      color: 'var(--color-secondary-hover)',
+                    }}>
+                      🎉 {f.title}
+                    </span>
+                  ))}
+                </div>
+              )}
+
               <button
                 onClick={handleContinue}
                 className="btn-primary"
@@ -664,11 +587,9 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
             </>
           ) : (
             <p style={{
-              fontFamily:  'var(--font-body, system-ui)',
-              fontSize:    '11px',
-              color:       'var(--color-text-muted)',
-              textAlign:   'center',
-              margin:      0,
+              fontFamily: 'var(--font-body, system-ui)',
+              fontSize: '11px', color: 'var(--color-text-muted)',
+              textAlign: 'center', margin: 0,
             }}>
               Select an available date to continue your enquiry
             </p>
