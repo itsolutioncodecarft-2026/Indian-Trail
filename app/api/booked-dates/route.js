@@ -70,7 +70,7 @@ export async function GET() {
 
   try {
     const res = await fetch(url, {
-      next: { revalidate: CACHE_SECONDS },
+      cache: 'no-store', // force-dynamic route — always fetch fresh from Google
     });
 
     if (!res.ok) {
@@ -93,11 +93,14 @@ export async function GET() {
     const items = data.items || [];
 
     // Normalize — title is always "Booked" (never expose real event names)
+    // Google all-day event end.date is EXCLUSIVE (next day after the event).
+    // We store it as-is with allDay:true and handle the exclusivity in getEventsForDate.
     const events = items.map(event => {
       const s = event.start;
       const e = event.end;
 
       if (s.dateTime) {
+        // Timed event — store ISO strings as-is
         return {
           id:     event.id,
           title:  'Booked',
@@ -107,12 +110,14 @@ export async function GET() {
         };
       }
 
-      // All-day event — normalize to UTC midnight
+      // All-day event — store date strings (no time component) with allDay flag.
+      // s.date = "YYYY-MM-DD" (inclusive start)
+      // e.date = "YYYY-MM-DD" (EXCLUSIVE end — the day after the last booked day)
       return {
         id:     event.id,
         title:  'Booked',
-        start:  s.date + 'T00:00:00Z',
-        end:    e.date + 'T00:00:00Z',
+        start:  s.date,   // "YYYY-MM-DD"
+        end:    e.date,   // "YYYY-MM-DD" exclusive — caller must handle this
         allDay: true,
       };
     });
