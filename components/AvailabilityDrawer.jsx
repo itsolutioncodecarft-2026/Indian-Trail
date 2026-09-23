@@ -19,6 +19,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { X, ChevronLeft, ChevronRight, Calendar, AlertCircle, CalendarDays } from 'lucide-react';
+import { getEventsForDate } from '@/lib/calendarUtils';
 
 /* ── helpers ─────────────────────────────────────────────────────── */
 const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
@@ -84,11 +85,11 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
   const [viewYear,  setViewYear]  = useState(today0.getFullYear());
   const [viewMonth, setViewMonth] = useState(today0.getMonth()); // 0-based
 
-  // Data state
-  const [busyDates,    setBusyDates]    = useState(null);  // null=loading, []=loaded
-  const [loadError,    setLoadError]    = useState(false);
+  // Data state — now uses full events list from /api/booked-dates
+  const [calEvents,     setCalEvents]     = useState(null);  // null=loading
+  const [loadError,     setLoadError]     = useState(false);
   const [notConfigured, setNotConfigured] = useState(false);
-  const [loadingMonth, setLoadingMonth] = useState('');
+  const [loadingMonth,  setLoadingMonth]  = useState('');
 
   // Selection
   const [selected,      setSelected]      = useState(null);  // ISO string
@@ -132,35 +133,32 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
     return () => document.removeEventListener('keydown', handler);
   }, [open, onClose]);
 
-  /* ── load availability data ──────────────────────────────────── */
-  const loadMonth = useCallback(async (key) => {
-    setLoadingMonth(key);
+  /* ── load availability data — fetched once per drawer open ─────── */
+  const loadMonth = useCallback(async () => {
+    setLoadingMonth('loading');
     setLoadError(false);
     setNotConfigured(false);
-    setBusyDates(null);
+    setCalEvents(null);
     try {
-      const res  = await fetch(`/api/calendar/availability?month=${key}`);
+      const res  = await fetch('/api/booked-dates');
       const data = await res.json().catch(() => ({}));
 
-      // 503 with CALENDAR_NOT_CONFIGURED — graceful unavailable state
       if (!res.ok && data?.code === 'CALENDAR_NOT_CONFIGURED') {
         setNotConfigured(true);
-        setBusyDates(null);
         return;
       }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      setBusyDates(data.busyDates ?? []);
+      setCalEvents(data.events ?? []);
     } catch {
       setLoadError(true);
-      setBusyDates(null);
     } finally {
       setLoadingMonth('');
     }
   }, []);
 
   useEffect(() => {
-    if (open) loadMonth(monthKey);
-  }, [open, monthKey, loadMonth]);
+    if (open) loadMonth();
+  }, [open, loadMonth]);
 
   /* ── navigation ──────────────────────────────────────────────── */
   const prevMonth = () => {
@@ -180,7 +178,13 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
   };
 
   /* ── cell interaction ────────────────────────────────────────── */
-  const isBusy = (iso) => busyDates?.includes(iso) ?? false;
+  const dayEvents = calEvents ? getEventsForDate(calEvents, '') : [];
+
+  const isBusy = (iso) => {
+    if (!calEvents) return false;
+    const evs = getEventsForDate(calEvents, iso);
+    return evs.length > 0;
+  };
 
   const handleCellClick = (cell) => {
     if (!cell) return;
@@ -209,7 +213,6 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
 
   /* ── calendar grid ───────────────────────────────────────────── */
   const grid = buildGrid(viewYear, viewMonth);
-  const busySet = new Set(busyDates ?? []);
 
   /* ── styles ──────────────────────────────────────────────────── */
   const isPrevDisabled = viewYear === today0.getFullYear() && viewMonth <= today0.getMonth();
@@ -402,7 +405,7 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
         {/* Calendar grid */}
         <div style={{ padding: '0 16px', flex: 1, minHeight: 0 }}>
           {/* Loading skeleton */}
-          {(busyDates === null && !loadError) && (
+          {(calEvents === null && !loadError && !notConfigured) && (
             <div
               style={{
                 display:             'grid',
@@ -454,7 +457,7 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
                 Availability is temporarily unavailable.
               </p>
               <button
-                onClick={() => loadMonth(monthKey)}
+                onClick={() => loadMonth()}
                 aria-label="Retry loading availability"
                 style={{
                   fontFamily:      'var(--font-body, system-ui)',
@@ -475,7 +478,7 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
           )}
 
           {/* Loaded grid */}
-          {busyDates !== null && !loadError && (
+          {calEvents !== null && !loadError && !notConfigured && (
             <div
               style={{
                 display:             'grid',
@@ -484,10 +487,8 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
               }}
             >
               {grid.map((cell, idx) => {
-                if (!cell) {
-                  return <div key={idx} />;
-                }
-                const busy      = busySet.has(cell.iso);
+                if (!cell) return <div key={idx} />;
+                const busy     = isBusy(cell.iso);
                 const disabled  = cell.isPast || busy;
                 const isSelected = selected === cell.iso;
                 const showMsg   = disabledMsg?.iso === cell.iso;
