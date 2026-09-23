@@ -26,8 +26,6 @@ import { NextResponse } from 'next/server';
 // Never statically pre-render — env vars must be read at request time.
 export const dynamic = 'force-dynamic';
 
-const CACHE_SECONDS = 300; // 5 minutes
-
 /* ── Config validation (lazy, inside handler) ──────────────────── */
 function getConfig() {
   const apiKey     = (process.env.GOOGLE_API_KEY     || '').trim();
@@ -127,7 +125,10 @@ export async function GET() {
       {
         status:  200,
         headers: {
-          'Cache-Control': `public, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=60`,
+          // No CDN/edge caching — always serve fresh data so newly added
+          // calendar events appear immediately without stale responses.
+          // Browser may still cache briefly; no-store prevents even that.
+          'Cache-Control': 'no-store, no-cache, must-revalidate',
         },
       }
     );
