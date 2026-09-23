@@ -608,13 +608,13 @@
     .avail-tab-desktop-wrapper  →  translateY(-50%)  [vertical centre, never animated]
     .avail-tab-nudge            →  translateX(...)   [horizontal nudge ONLY]
 
-  Nudge: 12px inward travel, 3.5s ease-in-out, infinite alternate.
+  Nudge: 12px inward travel, 3.2s ease-in-out, infinite alternate.
   Small pause at endpoints is natural from ease-in-out curve.
   Paused via .avail-tab-nudge--paused (hover / focus).
   Disabled entirely under prefers-reduced-motion.
 
-  Body overflow-x guard below prevents any page-level horizontal scroll
-  that the off-screen portion of the tab might otherwise cause.
+  Breakpoint: ≥1024px = desktop edge tab; <1024px = compact mobile button.
+  Body overflow-x guard prevents page-level horizontal scroll.
 ────────────────────────────────────────────────────────────────── */
 
 /* Prevent edge-tab from causing horizontal scroll */
@@ -622,42 +622,45 @@ body { overflow-x: hidden; }
 
 @keyframes avail-nudge {
   from { transform: translateX(0px);   }
-  to   { transform: translateX(-12px); }
+  to   { transform: translateX(-13px); }
 }
 
+/* .avail-tab-nudge — inner animated span, owns X-axis only */
 .avail-tab-nudge {
   display:                   block;
   animation-name:            avail-nudge;
-  animation-duration:        3.5s;
+  animation-duration:        3.2s;
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
   animation-direction:       alternate;
   animation-fill-mode:       both;
-  /* Prevent the animated element from causing overflow */
   will-change:               transform;
 }
 
-/* Pause on hover / focus — JS adds this class */
+/* Pause on hover / focus — JS toggles this class */
 .avail-tab-nudge--paused {
   animation-play-state: paused;
 }
 
-/* Reduced-motion: kill animation, keep control fully visible */
+/* Reduced-motion: stop animation, keep trigger fully visible */
 @media (prefers-reduced-motion: reduce) {
   .avail-tab-nudge {
-    animation:  none !important;
-    transform:  translateX(0px) !important;
-    transition: none !important;
+    animation:   none !important;
+    transform:   translateX(0px) !important;
+    transition:  none !important;
     will-change: auto !important;
   }
 }
 
-/* Desktop (≥768px): right-edge tab visible, mobile button hidden */
+/*
+  Breakpoint: ≥1024px → desktop right-edge tab (hidden on mobile).
+  Breakpoint: <1024px → compact mobile button (hidden on desktop).
+  Using 1024px so tablets get the mobile compact button, not the edge tab.
+*/
 .avail-tab-desktop-wrapper { display: block; }
 .avail-tab-mobile-wrapper  { display: none;  }
 
-/* Mobile (<768px): compact button visible, desktop tab hidden */
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   .avail-tab-desktop-wrapper { display: none;  }
   .avail-tab-mobile-wrapper  { display: block; }
 }

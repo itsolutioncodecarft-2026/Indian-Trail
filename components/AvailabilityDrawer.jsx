@@ -106,7 +106,7 @@ function FestivalMicro({ festivals, selected }) {
 }
 
 /* ── main component ──────────────────────────────────────────────── */
-export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
+export default function AvailabilityDrawer({ open, onClose, triggerRef, id }) {
   const router = useRouter();
   const today0 = new Date();
 
@@ -221,6 +221,7 @@ export default function AvailabilityDrawer({ open, onClose, triggerRef }) {
       {/* Panel */}
       <div
         ref={panelRef}
+        id={id}
         role="dialog"
         aria-modal="true"
         aria-labelledby="avail-drawer-title"
