@@ -4,6 +4,7 @@ import { useLang } from '@/lib/LanguageContext';
 import { tours } from '@/data/tours';
 import { siteConfig } from '@/data/siteContent';
 import { MessageCircle, Mail, CheckCircle, ArrowRight } from 'lucide-react';
+import FormDatePicker from '@/components/FormDatePicker';
 
 const inp = {
   width: '100%', padding: '0.65rem 0.9rem',
@@ -167,14 +168,13 @@ export default function EnquiryForm({ defaultTour = '', defaultMessage = '', def
           </select>
         </div>
 
-        {/* Travel date */}
-        <div>
-          <label style={labelStyle}>Travel Date</label>
-          <input type="date" name="date" value={form.date} onChange={handleChange}
-            min={new Date().toISOString().split('T')[0]}
-            style={inputStyle('date')}
-            onFocus={() => setFocus(f => ({ ...f, date: true }))}
-            onBlur={() => setFocus(f => ({ ...f, date: false }))} />
+        {/* Travel date — custom calendar with booked dates blocked */}
+        <div className="max-sm:col-span-full" style={{ gridColumn: 'span 2' }}>
+          <FormDatePicker
+            value={form.date}
+            onChange={(iso) => setForm(f => ({ ...f, date: iso }))}
+            labelStyle={labelStyle}
+          />
         </div>
 
         {/* Travellers */}
