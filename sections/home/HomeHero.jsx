@@ -652,13 +652,27 @@ export default function HomeHero() {
       }}
     >
       <div className="absolute inset-0">
+        {/* ── Mobile hero image (≤767px) ── */}
+        {/* priority: mobile LCP; sizes 0px at desktop tells browser not to fetch */}
         <Image
-          src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=2400&q=90"
+          src="/home/home collag mobile.png"
+          alt="Indian Routes & Trails — curated journeys across India"
+          fill
+          priority
+          className="object-cover md:hidden"
+          style={{ objectPosition: 'center 55%' }}
+          sizes="(max-width: 767px) 100vw, 0px"
+        />
+        {/* ── Desktop hero image (≥768px) — original, unchanged ── */}
+        {/* sizes 0px at mobile tells browser not to fetch on small screens */}
+        <Image
+          src="/home/home collag.png"
           alt="Amber Fort at dawn, Jaipur — Indian Routes & Trails"
-          fill priority
-          className="object-cover"
-          style={{ objectPosition: 'center 10%' }}
-          sizes="100vw"
+          fill
+          priority
+          className="object-cover hidden md:block"
+          style={{ objectPosition: 'center 80%' }}
+          sizes="(min-width: 768px) 100vw, 0px"
         />
         <div className="absolute inset-0"
           style={{ background: 'linear-gradient(to top, var(--color-primary-dark) 0%, rgba(27,42,94,0.55) 45%, transparent 100%)' }} />

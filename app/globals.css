@@ -576,6 +576,18 @@
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
 
+/* ── Hero responsive image switching ───────────────────────────
+   Belt-and-suspenders for Next Image fill + responsive visibility.
+   Tailwind md: = min-width 768px. 0px sizes hint prevents cross-fetch.
+──────────────────────────────────────────────────────────────── */
+.home-hero-img-mobile  { display: block;  }
+.home-hero-img-desktop { display: none;   }
+
+@media (min-width: 768px) {
+  .home-hero-img-mobile  { display: none;  }
+  .home-hero-img-desktop { display: block; }
+}
+
 /* ── HeroSelect dropdown panel animation ───────────────────────
    Plays on open. Close is immediate (portal unmounts).
    Respects prefers-reduced-motion via the global rule above.
