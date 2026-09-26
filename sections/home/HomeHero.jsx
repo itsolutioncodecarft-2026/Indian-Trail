@@ -686,17 +686,30 @@ export default function HomeHero() {
           <div className="max-w-2xl mb-6">
             <h1
               className="font-serif font-light leading-none mb-5"
-              style={{ fontSize: 'clamp(3rem, 7vw, 5.8rem)', letterSpacing: '-0.02em', color: 'var(--color-text-invert)' }}
+              style={{
+                fontSize:   'clamp(3rem, 7vw, 5.8rem)',
+                letterSpacing: '-0.02em',
+                color:      'var(--color-text-invert)',
+                textShadow: '0 2px 12px rgba(10,14,40,0.65), 0 1px 4px rgba(10,14,40,0.55)',
+              }}
             >
               Discover India,<br />
-              <em style={{ color: 'var(--color-secondary)', fontStyle: 'italic' }}>
+              <em style={{
+                color:      'var(--color-secondary)',
+                fontStyle:  'italic',
+                textShadow: '0 2px 14px rgba(10,14,40,0.70), 0 1px 5px rgba(10,14,40,0.50)',
+              }}>
                 Beyond the Ordinary.
               </em>
             </h1>
 
             <p
               className="font-sans font-light mb-7 max-w-lg leading-relaxed"
-              style={{ fontSize: 'clamp(0.95rem, 1.5vw, 1.1rem)', color: 'rgba(255,255,255,0.65)' }}
+              style={{
+                fontSize:   'clamp(0.95rem, 1.5vw, 1.1rem)',
+                color:      'rgba(255,255,255,0.72)',
+                textShadow: '0 1px 8px rgba(10,14,40,0.60), 0 1px 3px rgba(10,14,40,0.45)',
+              }}
             >
               Private journeys shaped around culture, connection and the timeless spirit of India —
               crafted personally by Om for discerning travellers from around the world.
