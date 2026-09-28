@@ -35,7 +35,8 @@ export default function TourDetailClient({ tour }) {
   return (
     <>
       {/* Hero */}
-      <section className="relative h-[80vh] min-h-[520px] flex items-end pb-16 overflow-hidden">
+      <section className="relative flex items-end overflow-hidden"
+        style={{ minHeight: 'clamp(560px, 85vh, 860px)', paddingTop: 'var(--header-height-desktop)' }}>
         <div className="absolute inset-0">
           <Image
             src={tour.featuredImage}
@@ -47,7 +48,7 @@ export default function TourDetailClient({ tour }) {
           <div className="absolute inset-0"
             style={{ background: 'linear-gradient(to right, rgba(20,34,77,0.55) 0%, transparent 60%)' }} />
         </div>
-        <div className="relative container-luxury w-full">
+        <div className="relative container-luxury w-full pb-14">
           <Link
             href="/tours"
             className="inline-flex items-center gap-2 font-sans text-[11px] tracking-wider uppercase mb-7 transition-colors"
@@ -82,8 +83,16 @@ export default function TourDetailClient({ tour }) {
               </span>
             ))}
           </div>
-          <h1 className="display-title leading-none max-w-3xl mb-4"
-            style={{ color: 'var(--color-text-invert)' }}>
+          <h1
+            className="display-title leading-none mb-4"
+            style={{
+              color: 'var(--color-text-invert)',
+              maxWidth: tour.heroTitleSize === 'compact' ? '52rem' : '48rem',
+              fontSize: tour.heroTitleSize === 'compact'
+                ? 'clamp(2rem, 4vw, 4rem)'
+                : undefined,
+              lineHeight: tour.heroTitleSize === 'compact' ? 1.02 : undefined,
+            }}>
             {tour.title}
           </h1>
           <p className="font-sans font-light max-w-xl"
