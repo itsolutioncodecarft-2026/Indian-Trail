@@ -1,6 +1,7 @@
 import { tours } from '@/data/tours';
 import { destinations } from '@/data/destinations';
 import { festivals } from '@/data/festivals';
+import { shortTrips } from '@/data/shortTrips';
 
 const BASE_URL = 'https://www.indianroutesandtrails.com';
 
@@ -26,8 +27,16 @@ export default function sitemap() {
     priority: 0.7,
   }));
 
+  // Short trips — one canonical URL per slug (variants handled via query params)
+  const shortTripUrls = shortTrips.map((t) => ({
+    url: `${BASE_URL}/short-trips/${t.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly',
+    priority: 0.8,
+  }));
+
   const staticUrls = [
-    '', '/about', '/tours', '/destinations', '/festivals', '/experiences', '/contact',
+    '', '/about', '/tours', '/short-trips', '/destinations', '/festivals', '/experiences', '/contact',
   ].map((path) => ({
     url: `${BASE_URL}${path}`,
     lastModified: new Date(),
@@ -35,5 +44,5 @@ export default function sitemap() {
     priority: path === '' ? 1.0 : 0.8,
   }));
 
-  return [...staticUrls, ...tourUrls, ...destUrls, ...festivalUrls];
+  return [...staticUrls, ...tourUrls, ...destUrls, ...festivalUrls, ...shortTripUrls];
 }

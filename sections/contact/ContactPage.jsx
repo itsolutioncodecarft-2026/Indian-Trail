@@ -6,6 +6,7 @@ import EnquiryForm from '@/components/EnquiryForm';
 import { Mail, Phone, MapPin, MessageCircle } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
+import { getShortTripBySlug } from '@/data/shortTrips';
 
 /*
   Hero offset: fixed navbar is ~64px tall.
@@ -27,6 +28,20 @@ function ContactContent() {
   const searchParams = useSearchParams();
   const defaultTour = searchParams.get('tour') || '';
   const defaultDate = searchParams.get('date') || '';
+
+  // Parse shortTrip + variant from URL → "slug__variantId" composite value
+  // Used to preselect Preferred Short Trip in the enquiry form
+  const rawShortTrip = searchParams.get('shortTrip') || '';
+  const rawVariant   = searchParams.get('variant')   || '';
+  const defaultShortTrip = (() => {
+    if (!rawShortTrip) return '';
+    const trip = getShortTripBySlug(rawShortTrip);
+    if (!trip) return ''; // invalid slug — safe fallback
+    const vid = rawVariant && trip.variants.find((v) => v.id === rawVariant)
+      ? rawVariant
+      : (trip.defaultVariant ?? trip.variants[0].id);
+    return `${rawShortTrip}__${vid}`;
+  })();
 
   return (
     <>
@@ -170,7 +185,7 @@ function ContactContent() {
                 style={{ color: 'var(--color-text-muted)' }}>
                 Tell us about your dream India experience. Om will personally respond.
               </p>
-              <EnquiryForm defaultTour={defaultTour} defaultDate={defaultDate} />
+              <EnquiryForm defaultTour={defaultTour} defaultDate={defaultDate} defaultShortTrip={defaultShortTrip} />
             </div>
           </div>
         </div>

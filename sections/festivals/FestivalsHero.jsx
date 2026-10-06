@@ -32,8 +32,8 @@ export default function FestivalsHero() {
         </h1>
         <p className="mt-5 font-sans font-light max-w-xl"
           style={{ color: 'rgba(255,255,255,0.62)', fontSize: '1.05rem' }}>
-          Time your journey around Diwali, Holi, the Pushkar Camel Fair or Dev Deepawali
-          — Om will weave the festival into the very fabric of your itinerary.
+          Time your journey around Diwali, Holi, the Pushkar Camel Fair, Gangaur,
+          Onam and more — Om will weave the festival into the very fabric of your itinerary.
         </p>
       </div>
     </section>

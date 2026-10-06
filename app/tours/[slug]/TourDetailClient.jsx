@@ -228,6 +228,35 @@ export default function TourDetailClient({ tour }) {
                 </div>
               )}
 
+              {/* Planning Notes — important operational notices e.g. Taj Mahal Friday closure */}
+              {tour.planningNotes?.length > 0 && (
+                <div className="p-5 flex items-start gap-4"
+                  style={{
+                    backgroundColor: 'rgba(192,69,59,0.06)',
+                    border: '1px solid rgba(192,69,59,0.25)',
+                    borderRadius: 'var(--radius-card)',
+                  }}>
+                  <div className="shrink-0 mt-0.5"
+                    style={{ color: 'var(--color-accent)', fontSize: '1.1rem', lineHeight: 1 }}>
+                    ⚠
+                  </div>
+                  <div>
+                    <p className="font-sans text-xs font-semibold uppercase tracking-widest mb-2"
+                      style={{ color: 'var(--color-accent)' }}>
+                      Important Planning Notes
+                    </p>
+                    <ul className="space-y-1.5">
+                      {tour.planningNotes.map((note, i) => (
+                        <li key={i} className="font-sans text-sm font-light leading-relaxed"
+                          style={{ color: 'var(--color-text)' }}>
+                          {note}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+
               {/* Day-by-day itinerary */}
               <div>
                 <p className="eyebrow mb-4">Day by Day</p>

@@ -12,6 +12,17 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      // Dev Deepawali has been removed from the festival calendar.
+      // Redirect old URL to the main festivals listing.
+      {
+        source: '/festivals/dev-deepawali',
+        destination: '/festivals',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

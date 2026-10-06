@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { href: '/',             label: 'Home' },
   { href: '/about',        label: 'About Om' },
   { href: '/tours',        label: 'Journeys' },
+  { href: '/short-trips',  label: 'Short Trips' },
   { href: '/destinations', label: 'Destinations' },
   { href: '/festivals',    label: 'Festival Calendar' },
   { href: '/experiences',  label: 'Experiences' },
@@ -27,7 +28,7 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const heroPages = ['/', '/about', '/tours', '/destinations', '/experiences', '/contact', '/festivals'];
+  const heroPages = ['/', '/about', '/tours', '/short-trips', '/destinations', '/experiences', '/contact', '/festivals'];
   const transparent = !scrolled && heroPages.includes(pathname);
 
   const logoVariant  = transparent ? 'light' : 'dark';

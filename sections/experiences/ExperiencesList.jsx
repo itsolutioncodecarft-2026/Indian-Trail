@@ -55,7 +55,7 @@ const experiences = [
     description: 'A dawn jeep safari through the rolling hills, crags and meadows of Ranthambore — one of India\'s finest opportunities to sight the Bengal tiger in the wild.',
     note: 'Wear warm, full-body clothing. Carry water and refreshments.',
     image: EXPERIENCE_IMAGES['wildlife-safari'],
-    tours: ['golden-triangle-wildlife-trail', 'royal-forts-wilderness-heritage-trail', 'echoes-of-forts-and-forests', 'crowns-citadel-countryside'],
+    tours: ['royal-forts-wilderness-heritage-trail', 'echoes-of-forts-and-forests', 'crowns-citadel-countryside'],
   },
   {
     category: 'Spiritual',

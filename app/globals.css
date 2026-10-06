@@ -588,6 +588,45 @@
   .home-hero-img-desktop { display: block; }
 }
 
+/* ── EnquiryForm responsive grid ────────────────────────────────────
+   Root cause of mobile layout bug:
+   - Tailwind max-sm:!grid-cols-1 only targets ≤639px, not ≤767px
+   - inline gridColumn:'span 2' on Travel Date/helper didn't reset mobile
+   - field divs lacked min-width:0 causing overflow in flex/grid context
+
+   Fix: explicit .ef-grid class with mobile-first one-column layout,
+   desktop two-column at ≥640px, all child wrappers get min-width:0.
+────────────────────────────────────────────────────────────────── */
+.ef-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+.ef-grid > * {
+  min-width: 0;
+  width: 100%;
+}
+@media (min-width: 640px) {
+  .ef-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .ef-span2 {
+    grid-column: 1 / -1;
+  }
+}
+/* Below 640px everything is one column — span2 has no effect */
+@media (max-width: 639px) {
+  .ef-span2 {
+    grid-column: 1 / -1;
+  }
+}
+.filter-bar-scroll::-webkit-scrollbar { display: none; }
+.filter-bar-scroll { scrollbar-width: none; -ms-overflow-style: none; }
+
+/* ── Hide scrollbar (mobile sliders) ───────────────────────────── */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+
 /* ── HeroSelect dropdown panel animation ───────────────────────
    Plays on open. Close is immediate (portal unmounts).
    Respects prefers-reduced-motion via the global rule above.
