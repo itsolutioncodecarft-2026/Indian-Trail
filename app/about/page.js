@@ -1,11 +1,13 @@
 import AboutHero from '@/sections/about/AboutHero';
 import AboutStory from '@/sections/about/AboutStory';
+import AboutExpertise from '@/sections/about/AboutExpertise';
 import AboutPhilosophy from '@/sections/about/AboutPhilosophy';
-import AboutCTA from '@/sections/about/AboutCTA';
+import AboutWhereIGuide from '@/sections/about/AboutWhereIGuide';
+import AboutClosing from '@/sections/about/AboutClosing';
 
 export const metadata = {
-  title: 'About Om — The Visionary Behind the Voyage',
-  description: 'Meet Om — professional guide with 10+ years experience, Spanish-language expert, and the heart behind Indian Routes & Trails. His story, philosophy and approach to luxury travel.',
+  title: 'About Om — The Man Behind Every Journey',
+  description: 'Meet Om Prakash Saini — Government of India authorised PAN-India Tourist Guide with 38+ years of guiding excellence, Spanish-language specialist, and the heart of Indian Routes & Trails.',
 };
 
 export default function AboutPage() {
@@ -13,8 +15,10 @@ export default function AboutPage() {
     <>
       <AboutHero />
       <AboutStory />
+      <AboutExpertise />
       <AboutPhilosophy />
-      <AboutCTA />
+      <AboutWhereIGuide />
+      <AboutClosing />
     </>
   );
 }

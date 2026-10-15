@@ -25,23 +25,50 @@ export const siteConfig = {
 
 export const omStory = {
   name: 'Om',
+  fullName: 'Om Prakash Saini',
   title: 'Founder & Master Guide',
   philosophy: `"Curated Exclusive Journeys by Om"`,
-  intro: `For over a decade, Om did not just show India to the world — he translated her soul.`,
+  intro: `Namaste! I am Om Prakash Saini, known to my guests around the world simply as Om. I am a Government of India authorised PAN-India Tourist Guide, recognised by the Ministry of Tourism. My journey began in 1988 as a local guide in Jaipur, and for nearly four decades I have led travellers from Spain, Latin America, the United States and beyond through the heart of India.`,
+  quote: `A journey is not only about visiting places; it is about understanding people, history, and traditions, and creating memories that last a lifetime.`,
+  pullQuote: `For me, every guest is more than a tourist: an honoured guest, a curious traveller and a true friend who often becomes a lifelong member of the family.`,
   story: [
-    `As a professional guide walking the vibrant labyrinths of Varanasi, the majestic fortresses of Rajasthan, and the serene backwaters of Kerala, Om discovered something profound: the finest travellers do not seek to merely see a country — they seek to be transformed by it.`,
-    `Equipped with an academic mastery and deep cultural fluency in the Spanish language, Om became the bridge between two worlds deeply rooted in passion, history, and emotion. For years, he led high-profile Spanish and Latin American travellers through the subcontinent. He learned exactly how a traveller from Madrid seeks the rhythm of Indian history, and how a guest from Mexico City connects with the vibrant colours and spiritual depth of Indian traditions.`,
-    `He wasn't just translating words; he was translating nuances, philosophies, and shared human emotions.`,
-    `But Om noticed a gap in the luxury travel world. Foreign travellers were often funnelled into rigid, commercialised tourist tracks, isolated from the real magic of India by a wall of generic itineraries. They missed the smell of morning chai in a hidden alleyway, the private blessing by a generational priest, and the quiet sunset over ancient ruins known only to locals.`,
-    `Driven by a vision to rescue travel from the ordinary, Om stepped forward to transform Indian Routes & Trails from a travel company into a high-end luxury consultancy. Every itinerary is a hand-woven masterpiece, balancing ultra-luxury comforts with raw, unfiltered authenticity.`,
-    `When you journey with Om, you are not a tourist holding a map. You are an honoured guest stepping through doors that money alone cannot open, guided by a master storyteller who speaks your language, understands your heart, and holds the keys to the true spirit of India.`,
+    `Namaste! I am Om Prakash Saini, known to my friends, colleagues and guests around the world simply as Om or OP. I am an authorised PAN-India Tourist Guide, recognised by the Government of India and the Ministry of Tourism.`,
+    `My journey began in 1988 as a local guide in Jaipur, leading travellers from Spain, Latin America, the United States and beyond. Over the decades, guiding has become much more than a profession for me. It is my passion: sharing the untold stories behind India's magnificent forts and palaces, sacred temples, colourful cities, vibrant festivals and timeless traditions.`,
+    `As I travelled across the country, I noticed a growing gap in the world of luxury travel. Foreign travellers were often funnelled into rigid, commercialised tourist tracks, isolated from the true heart of India by generic itineraries. They missed the simple magic: the aroma of morning chai in a hidden alleyway, a private blessing by a generational priest, or a quiet sunset over ancient ruins known only to locals.`,
+    `Driven by a vision to rescue travel from the ordinary, I transformed Indian Routes & Trails from a standard travel company into a high-end luxury consultancy. Today, every itinerary we create is a hand-woven masterpiece, balancing ultra-luxury comforts with raw, unfiltered authenticity.`,
+    `For me, you are never just a tourist holding a map. You are an honoured guest, a curious traveller and a true friend, stepping through doors that money alone cannot open. You will be guided by a master storyteller who speaks your language, understands your heart, and holds the keys to the true spirit of India.`,
+  ],
+  stats: [
+    { value: '38+', label: 'Years', sub: 'Guiding excellence across India, since 1988' },
+    { value: 'Govt.', label: 'of India Authorised', sub: 'PAN-India guide, Ministry of Tourism' },
+    { value: '🌍', label: 'Spanish-Speaking Specialist', sub: 'For travellers from Spain & Latin America' },
+    { value: '✦', label: 'Master Storyteller', sub: 'History, art, culture & heritage' },
+  ],
+  whereIGuide: [
+    { place: 'Agra', desc: 'the timeless beauty of the Taj Mahal' },
+    { place: 'Rajasthan', desc: 'royal grandeur of forts, palaces and living traditions' },
+    { place: 'Varanasi', desc: 'the spiritual atmosphere of India\'s oldest city' },
+    { place: 'Khajuraho', desc: 'architectural wonders in stone' },
+    { place: 'Tamil Nadu', desc: 'sacred temples' },
+    { place: 'Kerala', desc: 'tranquil backwaters' },
+    { place: 'Karnataka', desc: 'rich cultural traditions' },
   ],
   credentials: [
-    '10+ years as a professional guide across India',
-    'Academic mastery of the Spanish language',
-    'Deep expertise with Spanish and Latin American travellers',
-    'Cultural fluency across Rajasthan, Varanasi, Kerala and beyond',
-    'Personal architect of transformative luxury journeys',
+    '38+ years of guiding excellence — trusted veteran leading large, diverse groups across India',
+    'Authorised PAN-India Tourist Guide — recognised by the Government of India and Ministry of Tourism',
+    'Spanish-speaking specialist — fluent, culturally attuned guidance for travellers from Spain and Latin America',
+    'Master of history and storytelling — academic depth blended with captivating narratives of India\'s art, culture and heritage',
+    'Luxury travel curator — founder of Indian Routes & Trails, designing bespoke journeys with authenticity and comfort',
+    'Pan-India authority — expertise spanning Rajasthan, Varanasi, Kerala and beyond',
+    'Passionate traveller and cultural ambassador — bridging worlds with empathy, professionalism and genuine hospitality',
+  ],
+  expertise: [
+    { title: '38+ Years of Guiding Excellence', desc: 'A trusted veteran, leading diverse groups across India.' },
+    { title: 'Spanish-Speaking Specialist', desc: 'Fluent, culturally attuned guidance for travellers from Spain & Latin America.' },
+    { title: 'Master of History & Storytelling', desc: 'Academic depth blended with captivating narratives of India\'s art, culture & heritage.' },
+    { title: 'Luxury Travel Curator', desc: 'Founder of Indian Routes & Trails, designing bespoke journeys with authenticity & comfort.' },
+    { title: 'Pan-India Authority', desc: 'Government-recognised guide with expertise across Rajasthan, Varanasi, Kerala & beyond.' },
+    { title: 'Cultural Ambassador', desc: 'Bridging worlds with empathy, professionalism & genuine hospitality.' },
   ],
 };
 
@@ -55,21 +82,21 @@ export const responsibleTourism = {
 export const whyChooseUs = [
   {
     icon: 'globe',
-    title: 'Spanish-Speaking Expertise',
+    title: 'Spanish-Speaking Specialist',
     description:
-      'Om brings academic fluency in Spanish and intimate knowledge of Latin American travel sensibilities — a rare bridge between two rich cultures.',
+      'Fluent, culturally attuned guidance for travellers from Spain and Latin America — a rare bridge ensuring you feel entirely at ease while discovering India.',
   },
   {
     icon: 'star',
-    title: 'Curated, Not Commercialised',
+    title: '38+ Years of Guiding Excellence',
     description:
-      'Every journey is personally designed. We step away from rigid tourist tracks to craft itineraries that reveal the India most visitors never encounter.',
+      'Authorised PAN-India Tourist Guide, recognised by the Government of India and Ministry of Tourism. A trusted veteran since 1988.',
   },
   {
     icon: 'heart',
     title: 'Ultra-Luxury Meets Authenticity',
     description:
-      'From palace hotels to hidden village experiences, we balance the finest comforts with genuine, unfiltered Indian life.',
+      'Every journey is a hand-woven masterpiece. From palace hotels to hidden village experiences, I balance the finest comforts with genuine, unfiltered Indian life.',
   },
   {
     icon: 'shield',

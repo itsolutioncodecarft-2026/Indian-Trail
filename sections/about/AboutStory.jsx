@@ -17,65 +17,86 @@ export default function AboutStory() {
 
           {/* ── story text ── */}
           <div className="lg:col-span-7 order-2 lg:order-1">
-            <p className="eyebrow mb-2">His Story</p>
-            <h2 className="section-title mb-3">The Story of Om</h2>
-            <div className="divider-gold mb-5" />
-            <div className="space-y-3">
-              {omStory.story.map((para, i) => (
-                <p
-                  key={i}
-                  style={{
-                    fontFamily: i === 0 ? 'var(--font-display), Georgia, serif' : undefined,
-                    fontSize:   i === 0 ? '1.05rem' : '0.9rem',
-                    fontStyle:  i === 0 ? 'italic' : 'normal',
-                    color:      i === 0 ? 'var(--color-text)' : 'var(--color-text-muted)',
-                    fontWeight: 300,
-                    lineHeight: 1.7,
-                    margin:     0,
-                  }}
-                >
+            <p className="eyebrow mb-2">My Story</p>
+            <h2 className="section-title mb-3">My Story</h2>
+            <div className="divider-gold mb-6" />
+
+            <div className="space-y-5">
+              {/* ¶1 Introduction */}
+              <p style={{
+                fontFamily: 'var(--font-display), Georgia, serif',
+                fontSize:   '1.05rem',
+                fontStyle:  'italic',
+                color:      'var(--color-text)',
+                fontWeight: 300,
+                lineHeight: 1.7,
+                margin: 0,
+              }}>
+                {omStory.story[0]}
+              </p>
+
+              {/* ¶2 – ¶5 */}
+              {omStory.story.slice(1).map((para, i) => (
+                <p key={i} style={{
+                  fontFamily: 'var(--font-body, system-ui)',
+                  fontSize:   '0.92rem',
+                  color:      'var(--color-text-muted)',
+                  fontWeight: 300,
+                  lineHeight: 1.75,
+                  margin: 0,
+                }}>
                   {para}
                 </p>
               ))}
             </div>
+
+            {/* Pull quote */}
+            <blockquote
+              className="mt-8 p-5"
+              style={{
+                backgroundColor: 'rgba(27,42,94,0.05)',
+                borderLeft: '4px solid var(--color-secondary)',
+                borderRadius: '0 var(--radius-control) var(--radius-control) 0',
+              }}
+            >
+              <p className="font-serif italic font-light leading-relaxed"
+                style={{ color: 'var(--color-text)', fontSize: '1rem', margin: 0 }}>
+                &ldquo;{omStory.pullQuote}&rdquo;
+              </p>
+              <footer className="font-sans text-[10px] tracking-[0.25em] uppercase mt-3"
+                style={{ color: 'var(--color-secondary)' }}>
+                — Om, Founder
+              </footer>
+            </blockquote>
           </div>
 
           {/* ── sidebar ── */}
           <div className="lg:col-span-5 order-1 lg:order-2">
-            <div className="sticky top-24 space-y-3">
+            <div className="sticky top-24 space-y-4">
 
-              {/* quote */}
-              <div className="p-5"
+              {/* main quote card */}
+              <div className="p-6"
                 style={{ backgroundColor: 'var(--color-primary)', borderRadius: 'var(--radius-card)' }}>
-                <p className="font-serif italic font-light leading-snug mb-2.5"
+                <p className="font-serif italic font-light leading-snug mb-3"
                   style={{ color: 'var(--color-text-invert)', fontSize: '1rem' }}>
-                  &ldquo;Every itinerary is a hand-woven masterpiece — balancing ultra-luxury
-                  with raw, unfiltered authenticity.&rdquo;
+                  &ldquo;{omStory.quote}&rdquo;
                 </p>
                 <p className="font-sans text-[10px] tracking-[0.25em] uppercase"
                   style={{ color: 'var(--color-secondary)' }}>
-                  — Om, Founder
+                  — Om Prakash Saini
                 </p>
               </div>
 
-              {/*
-                Image:
-                - Mobile: max-height 180px so it doesn't dominate the small screen
-                - Desktop: 16/9 aspect (moderate height via the aspect-ratio)
-                We achieve this with a responsive wrapper — on small screens we cap height
-                explicitly; on lg+ we let aspect-ratio do the work.
-              */}
+              {/* image */}
               <div
                 className="relative overflow-hidden"
                 style={{ borderRadius: 'var(--radius-card)' }}
               >
-                {/* Mobile height cap via inline style; desktop uses aspect-ratio */}
                 <div
                   style={{
                     position:    'relative',
                     width:       '100%',
                     aspectRatio: '16/9',
-                    /* on mobile cap to 160px so it's clearly compact */
                     maxHeight:   '160px',
                   }}
                   className="lg-story-img"
@@ -119,9 +140,9 @@ export default function AboutStory() {
                   ))}
                 </ul>
               </div>
-
             </div>
           </div>
+
         </div>
       </div>
     </section>

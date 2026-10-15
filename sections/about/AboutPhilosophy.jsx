@@ -4,19 +4,19 @@ import Image from 'next/image';
 const pts = [
   {
     title: 'Not a Tour Group — A Personal Guest',
-    body: 'Om steps away from the traditional role of a guide to become your personal architect of travel. You are an honoured guest, not a number on a roster.',
+    body: 'You are an honoured guest, not a number on a roster. Every journey I design is built around you — your pace, your curiosity and your desire to connect with the real India.',
   },
   {
     title: 'Ultra-Luxury Meets Authentic India',
-    body: 'Every itinerary balances the finest comforts with raw, unfiltered authenticity. From palace hotels to hidden village experiences — nothing is generic.',
+    body: 'From palace hotels to hidden village experiences, I balance the finest comforts with genuine, unfiltered Indian life. Nothing is generic — everything is personal.',
   },
   {
     title: 'A Cultural Bridge',
-    body: 'Equipped with academic mastery of Spanish, Om translates not just words but nuances, philosophies, and shared human emotions between India and the Spanish-speaking world.',
+    body: 'I take special dedication in guiding Spanish-speaking travellers, so that you feel entirely at ease while discovering India — translating not just words, but nuances, philosophies and shared human emotions.',
   },
   {
-    title: 'Beyond the Brochure',
-    body: 'The smell of morning chai in a hidden alleyway. A private blessing by a generational priest. The quiet sunset over ancient ruins known only to locals.',
+    title: 'Built on Trust',
+    body: 'I believe the finest journeys are built on trust, knowledge, professionalism and genuine hospitality. These are the values that have guided every journey I have led since 1988.',
   },
 ];
 
@@ -43,7 +43,7 @@ export default function AboutPhilosophy() {
           <div>
             <p className="eyebrow mb-5">Philosophy</p>
             <h2 className="section-title mb-6">
-              A Philosophy of<br />
+              My Philosophy of<br />
               <em className="font-light" style={{ color: 'var(--color-primary-light)' }}>
                 Transformative Travel
               </em>
