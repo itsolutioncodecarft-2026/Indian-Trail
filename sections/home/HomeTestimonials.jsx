@@ -273,7 +273,7 @@ function TrackArrow({ onClick, disabled, label, side }) {
         /* Vertically centred on the card track */
         position:       'absolute',
         top:            '50%',
-        [side]:         '12px',
+        [side]:         '-20px',
         transform:      'translateY(-50%)',
         zIndex:         20,
         /* Desktop ~48px, scales down on tablet */
@@ -341,8 +341,8 @@ export default function HomeTestimonials() {
       style={{
         /* Warm sand/ivory surface — slightly richer than plain --color-bg */
         background:  'linear-gradient(180deg, var(--color-surface-alt) 0%, #EDE6D9 100%)',
-        paddingTop:    'clamp(52px, 7vw, 96px)',
-        paddingBottom: 'clamp(52px, 7vw, 96px)',
+        paddingTop:    'clamp(32px, 4vw, 56px)',
+        paddingBottom: 'clamp(32px, 4vw, 56px)',
       }}
     >
       <div className="container-luxury">
@@ -407,11 +407,7 @@ export default function HomeTestimonials() {
               scrollSnapType:       'x mandatory',
               scrollPaddingLeft:    '0px',
               WebkitOverflowScrolling: 'touch',
-              /* Equal-height columns in one row */
               alignItems:           'stretch',
-              /* Safe area padding so arrows don't cover first/last card */
-              paddingLeft:          showArrows ? '52px' : '0px',
-              paddingRight:         showArrows ? '52px' : '0px',
             }}
           >
             {testimonials.map((item, idx) => {
@@ -423,7 +419,7 @@ export default function HomeTestimonials() {
                   key={item.id}
                   style={{
                     flexShrink:      0,
-                    width:           `calc((100% - ${GAP * (perView - 1)}px - ${showArrows ? '104px' : '0px'}) / ${perView})`,
+                    width:           `calc((100% - ${GAP * (perView - 1)}px) / ${perView})`,
                     scrollSnapAlign: 'start',
                     display:         'flex',
                     flexDirection:   'column',
