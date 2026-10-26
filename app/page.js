@@ -3,6 +3,7 @@ import HomeBrand from '@/sections/home/HomeBrand';
 import HomeFestivalStrip from '@/sections/home/HomeFestivalStrip';
 import HomeTours from '@/sections/home/HomeTours';
 import HomeDestinations from '@/sections/home/HomeDestinations';
+import HomeTestimonials from '@/sections/home/HomeTestimonials';
 import HomeAboutTeaser from '@/sections/home/HomeAboutTeaser';
 import HomeWhyUs from '@/sections/home/HomeWhyUs';
 import HomeResponsible from '@/sections/home/HomeResponsible';
@@ -22,6 +23,7 @@ export default function HomePage() {
       <HomeTours />
       <HomeAboutTeaser />
       <HomeDestinations />
+      <HomeTestimonials />
       <HomeWhyUs />
       <HomeResponsible />
       <HomeCTA />
